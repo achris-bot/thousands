@@ -105,3 +105,9 @@ Use `cp -r dist "<Foundry user data>/Data/modules/thousands"` instead of a symli
 The code in this repository is licensed under the MIT License (see [LICENSE](LICENSE)).
 
 This module uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo's Community Use Policy (paizo.com/licenses/communityuse). We are expressly prohibited from charging you to use or access this content. This module is not published, endorsed, or specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit paizo.com.
+
+This module references material from _Pathfinder Adventure Path #169: Kindled Magic_ (Strength of Thousands, Book 1) by Alexandria Bustion and Eleanor Ferron, with additional writing by Shanyce Henley, Jenny Jarzabski, Jessica Redekop, and Mark Seifter.
+
+## Contact
+
+Module by [achris](https://github.com/achris). For questions or bug reports, please open an issue on the [GitHub Issues page](https://github.com/achris/thousands/issues).
