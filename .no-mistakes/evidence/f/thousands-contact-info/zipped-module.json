@@ -1,0 +1,58 @@
+{
+  "id": "thousands",
+  "title": "Strength of Thousands",
+  "description": "Tools for running the Strength of Thousands campaign, starting with the academia subsystem.",
+  "version": "0.1.0",
+  "license": "LICENSE",
+  "authors": [
+    {
+      "name": "achris",
+      "url": "https://github.com/achris"
+    }
+  ],
+  "url": "https://github.com/achris/thousands",
+  "bugs": "https://github.com/achris/thousands/issues",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.370"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf2e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "8.7.0"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "module.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "packs": [
+    {
+      "name": "academia-feats",
+      "label": "Academia Feats",
+      "path": "packs/academia-feats",
+      "type": "Item",
+      "system": "pf2e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    }
+  ],
+  "manifest": "https://github.com/achris/thousands/releases/latest/download/module.json",
+  "download": "https://github.com/achris/thousands/releases/download/v0.1.0/module.zip"
+}

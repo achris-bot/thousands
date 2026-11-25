@@ -1,0 +1,107 @@
+=== npm run build && npm run package -- v0.1.0 ===
+npm notice run thousands@0.0.0 build
+npm notice run vite build
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 16 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/module.js  60.55 kB │ gzip: 18.75 kB │ map: 174.64 kB
+
+✓ built in 433ms
+npm notice run thousands@0.0.0 package
+npm notice run node scripts/package-release.mjs v0.1.0
+
+=== dist/module.json ===
+{
+  "id": "thousands",
+  "title": "Strength of Thousands",
+  "description": "Tools for running the Strength of Thousands campaign, starting with the academia subsystem.",
+  "version": "0.1.0",
+  "license": "LICENSE",
+  "authors": [
+    {
+      "name": "achris",
+      "url": "https://github.com/achris"
+    }
+  ],
+  "url": "https://github.com/achris/thousands",
+  "bugs": "https://github.com/achris/thousands/issues",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.370"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf2e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "8.7.0"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "module.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "packs": [
+    {
+      "name": "academia-feats",
+      "label": "Academia Feats",
+      "path": "packs/academia-feats",
+      "type": "Item",
+      "system": "pf2e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    }
+  ],
+  "manifest": "https://github.com/achris/thousands/releases/latest/download/module.json",
+  "download": "https://github.com/achris/thousands/releases/download/v0.1.0/module.zip"
+}
+
+=== module.zip entries ===
+module.json
+packs/
+packs/academia-feats/
+packs/academia-feats/MANIFEST-000002
+packs/academia-feats/000003.log
+packs/academia-feats/LOG
+packs/academia-feats/CURRENT
+packs/academia-feats/LOCK
+module.js.map
+styles/
+styles/module.css
+module.js
+LICENSE
+lang/
+lang/en.json
+
+=== Semantic check of packaged manifest & README contact section ===
+{
+  "authors": [
+    {
+      "name": "achris",
+      "url": "https://github.com/achris"
+    }
+  ],
+  "url": "https://github.com/achris/thousands",
+  "bugs": "https://github.com/achris/thousands/issues",
+  "manifest": "https://github.com/achris/thousands/releases/latest/download/module.json",
+  "download": "https://github.com/achris/thousands/releases/download/v0.1.0/module.zip",
+  "manifestHasForbiddenContactInfo": false,
+  "readmeContactSection": "## Contact\n\nModule by [achris](https://github.com/achris). For questions or bug reports, please open an issue on the [GitHub Issues page](https://github.com/achris/thousands/issues).",
+  "readmeHasForbiddenContactInfo": false
+}
