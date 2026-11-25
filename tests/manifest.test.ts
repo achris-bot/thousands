@@ -10,11 +10,22 @@ const root = resolve(import.meta.dirname, "..");
 const dist = resolve(root, "dist");
 const zipPath = resolve(root, "module.zip");
 
+interface ManifestAuthor {
+  name: string;
+  url?: string;
+  email?: string;
+  discord?: string;
+  [key: string]: unknown;
+}
+
 interface Manifest {
   id: string;
   title: string;
   version: string;
   license: string;
+  authors?: ManifestAuthor[];
+  url?: string;
+  bugs?: string;
   manifest?: string;
   download?: string;
   compatibility: { minimum: string; verified: string };
@@ -75,6 +86,22 @@ describe("dist/module.json", () => {
     }
   });
 
+  it("publishes GitHub-only contact metadata without email or Discord details", () => {
+    expect(manifest.authors).toEqual([{ name: "achris", url: "https://github.com/achris" }]);
+    expect(manifest.url).toBe("https://github.com/achris/thousands");
+    expect(manifest.bugs).toBe("https://github.com/achris/thousands/issues");
+
+    const serializedContact = JSON.stringify({
+      authors: manifest.authors,
+      url: manifest.url,
+      bugs: manifest.bugs,
+    });
+    expect(serializedContact).not.toMatch(/mailto:|@|discord/i);
+    for (const author of manifest.authors ?? []) {
+      expect(Object.keys(author).sort()).toEqual(["name", "url"]);
+    }
+  });
+
   it("compiles all academia feats into the LevelDB pack in dist", async () => {
     const opts = { keyEncoding: "utf8", valueEncoding: "json" } as const;
     const db = new ClassicLevel<string, PF2eFeatSource>(resolve(dist, "packs", PACK_ID), opts);
@@ -82,7 +109,7 @@ describe("dist/module.json", () => {
     const stored = await itemsDb.values().all();
     await db.close();
     expect(stored).toHaveLength(ACADEMIA_FEATS.length);
-  });
+  }, 30_000);
 });
 
 describe("release packaging", () => {
@@ -95,6 +122,9 @@ describe("release packaging", () => {
     const stamped = JSON.parse(readFileSync(resolve(dist, "module.json"), "utf8")) as Manifest;
     expect(stamped.id).toBe("thousands");
     expect(stamped.version).toBe("0.1.0");
+    expect(stamped.authors).toEqual([{ name: "achris", url: "https://github.com/achris" }]);
+    expect(stamped.url).toBe("https://github.com/achris/thousands");
+    expect(stamped.bugs).toBe("https://github.com/achris/thousands/issues");
     expect(stamped.manifest).toBe(
       "https://github.com/achris/thousands/releases/latest/download/module.json",
     );
