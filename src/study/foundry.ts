@@ -4,7 +4,9 @@ import {
   AUTO_ADVANCE_MAX_CAP,
   BRANCHES,
   CRAM_FLAT_DC,
+  RANK_LABELS,
   dcForLevel,
+  isRank,
   resolveStarOnLevelUp,
   type BranchKind,
   type DegreeOfSuccess,
@@ -17,6 +19,17 @@ import {
   type StudyEntry,
 } from "./academia.js";
 import { describeEntry, entryFromMessage, type MessageLike } from "./chat.js";
+import {
+  PROMOTABLE_RANKS,
+  applyPromote,
+  defaultPromoteRank,
+  describePromote,
+  promoteEntryFromMessage,
+  startPromote,
+  type PromoteActor,
+  type PromotePick,
+  type PromoteUi,
+} from "./promote.js";
 import {
   fatigueOption,
   startResearch,
@@ -39,12 +52,19 @@ export interface ActorUpdateChanges {
 declare const Hooks: { on(hook: string, callback: Hook): number };
 declare const ChatMessage: {
   create(data: object): Promise<unknown>;
-  getSpeaker(options: { actor: unknown }): object;
+  getSpeaker(options: { actor?: unknown; alias?: string }): object;
 };
 declare const game: {
-  user: { id?: string; isGM: boolean; isActiveGM?: boolean; character?: StudyActor | null };
+  user: {
+    id?: string;
+    isGM: boolean;
+    isActiveGM?: boolean;
+    character?: (StudyActor & { id?: string }) | null;
+  };
   users?: { activeGM?: unknown };
-  actors?: Iterable<StudyActor>;
+  actors?: Iterable<StudyActor & { id?: string }> & {
+    party?: { members?: Iterable<StudyActor & { id?: string }> } | null;
+  };
   time?: { worldTime?: number };
   pf2e?: {
     Check?: {
@@ -59,7 +79,9 @@ declare const game: {
   modules: { get(id: string): { api?: unknown } | undefined };
 };
 declare const ui: { notifications: { warn(text: string): void } };
-declare const canvas: { tokens?: { controlled: { actor?: StudyActor | null }[] } };
+declare const canvas: {
+  tokens?: { controlled: { actor?: (StudyActor & { id?: string }) | null }[] };
+};
 declare const foundry: {
   utils: { randomID(): string; escapeHTML(text: string): string };
   applications: {
@@ -76,6 +98,7 @@ declare const foundry: {
 
 const STUDY_COMMAND = /^\s*\/study\s*$/i;
 const RESEARCH_COMMAND = /^\s*\/research\s*$/i;
+const PROMOTE_COMMAND = /^\s*\/promote\s*$/i;
 const previousLevels = new WeakMap<object, number>();
 const lastFatigueRolls = new WeakMap<object, { flagsKey: string; worldTime: number | undefined }>();
 const DEGREE_LABELS: Record<DegreeOfSuccess, string> = {
@@ -92,6 +115,11 @@ function runStudyCommand(): false {
 
 function runResearchCommand(): false {
   void research();
+  return false;
+}
+
+function runPromoteCommand(): false {
+  void promote();
   return false;
 }
 
@@ -129,7 +157,7 @@ export const STUDY_SETTINGS = {
   },
 } as const;
 
-const foundryUi: StudyUi & ResearchUi = {
+const foundryUi: StudyUi & ResearchUi & PromoteUi = {
   async pick(title, choices, allowed, notes) {
     const options = choices.map(
       (c, i) => `<option value="${i}">${foundry.utils.escapeHTML(c.label)}</option>`,
@@ -214,7 +242,86 @@ const foundryUi: StudyUi & ResearchUi = {
     });
     return (result as ResearchPick | null) ?? null;
   },
+  async pickPromote(actors, partyMembers) {
+    const esc = (s: string) => foundry.utils.escapeHTML(s);
+    const hasParty = partyMembers.length > 0;
+    const first = actors[0] ?? partyMembers[0]!;
+    const targetOpts = [
+      ...actors.map(
+        (a, i) =>
+          `<option value="${i}">${esc(a.name)} (${esc(RANK_LABELS[readState(a).rank])})</option>`,
+      ),
+      ...(hasParty
+        ? [`<option value="party">Whole party (${partyMembers.length} members)</option>`]
+        : []),
+    ];
+    const defaultRank = defaultPromoteRank(actors.length > 0 ? [first] : partyMembers);
+    const rankOpts = PROMOTABLE_RANKS.map(
+      (r) =>
+        `<option value="${r}"${r === defaultRank ? " selected" : ""}>${RANK_LABELS[r]}</option>`,
+    );
+    const showTargetSelect = actors.length > 1 || (actors.length === 1 && hasParty);
+    const val = (b: PickButton, name: string) => b.form.elements.namedItem(name)?.value ?? "";
+    const result = await foundry.applications.api.DialogV2.wait({
+      window: { title: "Promote Academic Rank" },
+      content: [
+        ...(showTargetSelect
+          ? [`<label>Target <select name="target">${targetOpts.join("")}</select></label>`]
+          : [
+              `<p class="thousands-character">Character: <strong>${esc(first.name)}</strong> (${esc(RANK_LABELS[readState(first).rank])})</p>`,
+            ]),
+        `<label>New rank <select name="rank">${rankOpts.join("")}</select></label>`,
+      ].join(""),
+      render: (_event: unknown, dialog: { element?: HTMLElement }) => {
+        const targetEl = dialog?.element?.querySelector<HTMLSelectElement>('select[name="target"]');
+        const rankEl = dialog?.element?.querySelector<HTMLSelectElement>('select[name="rank"]');
+        if (!targetEl || !rankEl) return;
+        targetEl.addEventListener("change", () => {
+          const group =
+            targetEl.value === "party"
+              ? partyMembers
+              : actors[Number(targetEl.value)]
+                ? [actors[Number(targetEl.value)]!]
+                : [];
+          rankEl.value = defaultPromoteRank(group);
+        });
+      },
+      buttons: [
+        {
+          action: "promote",
+          label: "Promote",
+          callback: (_event: unknown, b: PickButton): PromotePick | null => {
+            const rank = val(b, "rank");
+            if (!isRank(rank) || !PROMOTABLE_RANKS.includes(rank)) return null;
+            const targetVal = showTargetSelect
+              ? val(b, "target")
+              : hasParty && actors.length === 0
+                ? "party"
+                : "0";
+            const party = targetVal === "party";
+            const actor = party ? undefined : (actors[Number(targetVal)] ?? first);
+            return { actor, party, rank };
+          },
+        },
+      ],
+      rejectClose: false,
+    });
+    return (result as PromotePick | null) ?? null;
+  },
   warn: (text) => ui.notifications.warn(text),
+  postPromote: (actors, data) => {
+    const esc = (s: string) => foundry.utils.escapeHTML(s);
+    const who = actors.length > 1 ? "The party" : actors[0]!.name;
+    const speaker =
+      actors.length === 1
+        ? ChatMessage.getSpeaker({ actor: actors[0] })
+        : ChatMessage.getSpeaker({ alias: "Magaambya" });
+    return ChatMessage.create({
+      speaker,
+      content: `<p>${esc(who)} advances to Academic Rank: ${esc(RANK_LABELS[data.rank])}.</p>`,
+      flags: { [MODULE_ID]: { promote: data } },
+    });
+  },
   postSkip: (actor, id) =>
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor }),
@@ -263,6 +370,29 @@ export async function research(actor?: StudyActor | null): Promise<void> {
     return ui.notifications.warn("Select a token or assign a character for Practical Research.");
   }
   await startResearch(candidates, foundryUi);
+}
+
+const isCharacter = (a?: PromoteActor | null): a is PromoteActor =>
+  !!a && (!a.type || a.type === "character");
+
+/** Promotes Academic Rank (GM only) for the given actor, selected token, or world characters / active party. */
+export async function promote(actor?: PromoteActor | null): Promise<void> {
+  if (!game.user.isGM) {
+    return ui.notifications.warn("Only the GM can promote academic rank.");
+  }
+  const controlled = canvas.tokens?.controlled.find((t) => isCharacter(t.actor))?.actor ?? null;
+  const assigned = isCharacter(game.user.character) ? game.user.character : null;
+  const selected = controlled ?? assigned;
+  const candidates = actor
+    ? isCharacter(actor)
+      ? [actor]
+      : []
+    : [
+        ...(selected ? [selected] : []),
+        ...[...(game.actors ?? [])].filter((a) => isCharacter(a) && a !== selected),
+      ];
+  const partyMembers = actor ? [] : [...(game.actors?.party?.members ?? [])].filter(isCharacter);
+  await startPromote(candidates, foundryUi, partyMembers);
 }
 
 /** On a character level increase, posts a GM-applied card for auto-advance or each resolved star. */
@@ -387,30 +517,72 @@ function renderStudyCard(message: MessageLike, html: HTMLElement, isGM: boolean)
   html.querySelector(".message-content")?.append(card);
 }
 
-/** Registers the rule settings, `/study`, `/research`, the macro API, and the chat card. Call on `init`. */
+function resolvePromoteTargets(message: MessageLike, actorIds?: readonly string[]): PromoteActor[] {
+  if (actorIds?.length) {
+    const byId = new Map(
+      [...(game.actors ?? [])].flatMap((a) => (a.id && isCharacter(a) ? [[a.id, a] as const] : [])),
+    );
+    return actorIds.flatMap((id) => byId.get(id) ?? []);
+  }
+  const actor = message.actor as PromoteActor | null | undefined;
+  return isCharacter(actor) ? [actor] : [];
+}
+
+/** Adds the rank promotion result, and for the GM an Apply button, to a rendered Promote message. */
+export function renderPromoteCard(message: MessageLike, html: HTMLElement, isGM: boolean): void {
+  const entry = promoteEntryFromMessage(message);
+  if (!entry) return;
+  const targets = resolvePromoteTargets(message, entry.actorIds);
+  if (targets.length === 0) return;
+  const { text, done } = describePromote(targets, entry);
+  const card = document.createElement("div");
+  card.className = "thousands-study thousands-promote";
+  card.append(Object.assign(document.createElement("p"), { textContent: `Academia: ${text}` }));
+  if (isGM && !done) {
+    const button = Object.assign(document.createElement("button"), { textContent: "Apply" });
+    button.type = "button";
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      for (const actor of targets) await applyPromote(actor, entry);
+      await message.update({ [`flags.${MODULE_ID}.appliedAt`]: Date.now() });
+    });
+    card.append(button);
+  }
+  html.querySelector(".message-content")?.append(card);
+}
+
+/** Registers the rule settings, `/study`, `/research`, `/promote`, the macro API, and chat cards. Call on `init`. */
 export function registerStudy(): void {
   for (const [key, setting] of Object.entries(STUDY_SETTINGS)) {
     game.settings.register(MODULE_ID, key, { ...setting, scope: "world", config: true });
   }
   const module = game.modules.get(MODULE_ID);
   if (module) {
-    module.api = { ...(module.api as Record<string, unknown> | undefined), study, research };
+    module.api = {
+      ...(module.api as Record<string, unknown> | undefined),
+      study,
+      research,
+      promote,
+    };
   }
   if (typeof foundry !== "undefined") {
     const commands = foundry.applications?.sidebar?.tabs?.ChatLog?.CHAT_COMMANDS;
     if (commands) {
       commands.study = { rgx: STUDY_COMMAND, fn: runStudyCommand };
       commands.research = { rgx: RESEARCH_COMMAND, fn: runResearchCommand };
+      commands.promote = { rgx: PROMOTE_COMMAND, fn: runPromoteCommand };
     }
   }
   Hooks.on("chatMessage", (_log: unknown, text: string) => {
     const plain = text.trim().replace(/^<p>|<\/p>$/gi, "");
     if (STUDY_COMMAND.test(plain)) return runStudyCommand();
     if (RESEARCH_COMMAND.test(plain)) return runResearchCommand();
+    if (PROMOTE_COMMAND.test(plain)) return runPromoteCommand();
     return true;
   });
   Hooks.on("renderChatMessageHTML", (message: MessageLike, html: HTMLElement) => {
     renderStudyCard(message, html, game.user.isGM);
+    renderPromoteCard(message, html, game.user.isGM);
   });
   Hooks.on("preUpdateActor", (actor: StudyActor) => {
     previousLevels.set(actor, actor.level);

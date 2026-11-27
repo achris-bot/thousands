@@ -25,6 +25,8 @@ interface PackItem {
     level?: { value: number };
     category?: string;
     prerequisites?: { value: { value: string }[] };
+    rules?: unknown[];
+    subfeatures?: { proficiencies?: { spellcasting?: { rank?: number } } };
     traits: { rarity: string; value: string[]; traditions?: string[] };
   };
 }
@@ -92,6 +94,8 @@ describe("real PF2e system data", () => {
     expect(bySlug("magaambyan-attendant-dedication").system).toMatchObject({
       level: { value: 2 },
       category: "class",
+      rules: [],
+      subfeatures: { proficiencies: { spellcasting: { rank: 1 } } },
       traits: { value: expect.arrayContaining(["archetype", "dedication"]) },
     });
 
@@ -113,6 +117,12 @@ describe("real PF2e system data", () => {
 
     const prereqText = (slug: keyof typeof PF2E_FEAT_UUIDS) =>
       bySlug(slug).system.prerequisites?.value.map((p) => p.value.toLowerCase()) ?? [];
+    expect(prereqText("magaambyan-attendant-dedication")).toEqual(
+      expect.arrayContaining([
+        "trained in arcana or nature",
+        "member of the magaambya of attendant rank",
+      ]),
+    );
     expect(prereqText("emerald-boughs-accustomation")).toEqual(
       expect.arrayContaining(["magaambyan attendant dedication", "expert in society"]),
     );
@@ -145,6 +155,7 @@ describe("real PF2e system data", () => {
     }
     expect(langReEn.PF2E.SpecificRule.Prompt.Skill).toBeTruthy();
     expect(langReEn.PF2E.SpecificRule.Prompt.SkillFeat).toBeTruthy();
+    expect(langReEn.PF2E.SpecificRule.Prompt.Tradition).toBeTruthy();
     expect(langEn.PF2E.TraitDowntime).toBe("Downtime");
     expect(langEn.PF2E.TraitFortune).toBe("Fortune");
     expect(langEn.PF2E.TraitArchetype).toBe("Archetype");

@@ -5,13 +5,13 @@ import {
   BRANCH_IDS,
   PROFICIENCY_LABELS,
   RANKS,
+  RANK_LABELS,
   STUDENTS,
   STUDENT_IDS,
   type BenefitInfo,
   type BranchId,
   type BranchKind,
   type ProficiencyRank,
-  type Rank,
 } from "../rules/index.js";
 
 export const PACK_ID = "academia-feats";
@@ -220,13 +220,6 @@ function makeFeat(
   };
 }
 
-const RANK_LABELS: Record<Rank, string> = {
-  initiate: "Initiate",
-  attendant: "Attendant",
-  conversant: "Conversant",
-  "lore-speaker": "Lore-Speaker",
-};
-
 function buildStandingFeats(): PF2eFeatSource[] {
   const feats = RANKS.map((r) =>
     makeFeat(
@@ -278,9 +271,54 @@ function buildStandingFeats(): PF2eFeatSource[] {
 const LORE_RANK_PROGRESSION =
   "match(when(gte(@actor.level, 15), 4), when(gte(@actor.level, 7), 3), when(gte(@actor.level, 3), 2), 1)";
 
-const ATTENDANT_PLUS_PREDICATE = [
+export const ATTENDANT_PLUS_PREDICATE = [
   { or: ["academia:rank:attendant", "academia:rank:conversant", "academia:rank:lore-speaker"] },
 ];
+
+/** Companion rules for PF2e's prose-only Magaambyan Attendant Dedication (Book 1 pp. 44-45; LOCG p. 101). */
+function buildMagaambyanAttendantRulesFeat(): PF2eFeatSource {
+  const skills = ["arcana", "nature"] as const;
+  return makeFeat(
+    "Magaambyan Attendant Dedication Rules",
+    2,
+    `Rules for @UUID[${PF2E_FEAT_UUIDS["magaambyan-attendant-dedication"]}]{Magaambyan Attendant Dedication}: Arcana/Nature upgrade and tradition. Manual: add cantrip (pp. 44–45).`,
+    [
+      {
+        key: "ChoiceSet",
+        flag: "skill",
+        rollOption: "magaambyan-attendant-skill",
+        adjustName: false,
+        allowNoSelection: true,
+        prompt: "PF2E.SpecificRule.Prompt.Skill",
+        predicate: [{ or: skills.map((s) => ({ lte: [`skill:${s}:rank`, 1] })) }],
+        choices: skills.flatMap((s) => [
+          { label: skillKey(s), value: `${s}-trained`, predicate: [`skill:${s}:rank:0`] },
+          { label: skillKey(s), value: `${s}-expert`, predicate: [`skill:${s}:rank:1`] },
+        ]),
+      },
+      ...skills.flatMap((s) => [
+        aeLike("upgrade", `system.skills.${s}.rank`, 1, [
+          `magaambyan-attendant-skill:${s}-trained`,
+        ]),
+        aeLike("upgrade", `system.skills.${s}.rank`, 2, [`magaambyan-attendant-skill:${s}-expert`]),
+      ]),
+      {
+        key: "ChoiceSet",
+        flag: "tradition",
+        rollOption: "magaambyan-attendant:tradition",
+        adjustName: false,
+        prompt: "PF2E.SpecificRule.Prompt.Tradition",
+        choices: [
+          { label: "Arcane (Intelligence)", value: "arcane" },
+          { label: "Primal (Wisdom)", value: "primal" },
+        ],
+      },
+    ],
+    ["Attendant rank", "Magaambyan Attendant Dedication"],
+  );
+}
+
+export const MAGAAMBYAN_ATTENDANT_RULES_FEAT: PF2eFeatSource = buildMagaambyanAttendantRulesFeat();
 
 const SKILL_FEAT_MAX_LEVEL: Record<ProficiencyRank, number> = { 1: 4, 2: 6, 3: 14, 4: 20 };
 
@@ -405,33 +443,19 @@ function buildBenefitFeat(branchId: BranchId, ben: BenefitInfo): PF2eFeatSource 
       return makeFeat(
         name,
         ben.level,
-        `Grants Magaambyan Attendant Dedication once. Manual: pick cantrip (p. ${ben.page}).`,
+        `Grants Magaambyan Attendant Dedication and companion rules once. Manual: pick cantrip (p. ${ben.page}).`,
         [
           ...base,
           {
-            key: "ChoiceSet",
-            flag: "skill",
-            rollOption: "dedicated-attendant-skill",
-            adjustName: false,
-            allowNoSelection: true,
-            prompt: "PF2E.SpecificRule.Prompt.Skill",
-            predicate: [
-              ...ATTENDANT_PLUS_PREDICATE,
-              { not: "feat:magaambyan-attendant-dedication" },
-            ],
-            choices: (["arcana", "nature"] as const).map((s) => ({
-              label: skillKey(s),
-              value: s,
-              predicate: [{ lt: [`skill:${s}:rank`, 2] }],
-            })),
-          },
-          aeLike("add", "system.skills.{item|flags.system.rulesSelections.skill}.rank", 1, [
-            ...ATTENDANT_PLUS_PREDICATE,
-            { or: ["dedicated-attendant-skill:arcana", "dedicated-attendant-skill:nature"] },
-          ]),
-          {
             key: "GrantItem",
             uuid: PF2E_FEAT_UUIDS["magaambyan-attendant-dedication"],
+            predicate: ATTENDANT_PLUS_PREDICATE,
+            reevaluateOnUpdate: true,
+            allowDuplicate: false,
+          },
+          {
+            key: "GrantItem",
+            uuid: MAGAAMBYAN_ATTENDANT_RULES_FEAT._stats.compendiumSource,
             predicate: ATTENDANT_PLUS_PREDICATE,
             reevaluateOnUpdate: true,
             allowDuplicate: false,
@@ -676,4 +700,4 @@ export const BENEFIT_FEATS: readonly PF2eFeatSource[] = BRANCH_IDS.flatMap((bran
   BENEFITS.map((benefit) => buildBenefitFeat(branchId, benefit)),
 );
 // prettier-ignore
-export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ORIENTATION_SYMBOL_FEAT, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];
+export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ORIENTATION_SYMBOL_FEAT, MAGAAMBYAN_ATTENDANT_RULES_FEAT, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];
