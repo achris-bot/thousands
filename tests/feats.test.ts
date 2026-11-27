@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   ACADEMIA_FEATS,
+  ATTENDANT_PLUS_PREDICATE,
   BENEFIT_FEATS,
   CLASSROOM_ADVANTAGE_FEATS,
+  MAGAAMBYAN_ATTENDANT_RULES_FEAT,
   MAX_DESCRIPTION_LENGTH,
   ORIENTATION_SYMBOL_FEAT,
   ORIENTATION_SYMBOL_IDS,
@@ -46,17 +48,30 @@ const VALID_SELECTORS = new Set([
     .flatMap((b) => b.skills)
     .filter((s) => s !== "lore"),
 ]);
-const VALID_UUIDS = new Set<string>(Object.values(PF2E_FEAT_UUIDS));
+const VALID_UUIDS = new Set<string>([
+  ...Object.values(PF2E_FEAT_UUIDS),
+  MAGAAMBYAN_ATTENDANT_RULES_FEAT._stats.compendiumSource,
+]);
 
 /** Minimal PF2e predicate evaluator covering the atoms and operators these feats use. */
 type Predicate = string | { not: Predicate } | { or: Predicate[] } | { lte: [string, number] };
-const testPredicate = (preds: unknown[], options: Set<string>, level: number): boolean =>
+const testPredicate = (
+  preds: unknown[],
+  options: Set<string>,
+  values: number | Record<string, number>,
+): boolean =>
   (preds as Predicate[]).every(function check(p: Predicate): boolean {
     if (typeof p === "string") return options.has(p);
     if ("not" in p) return !check(p.not);
     if ("or" in p) return p.or.some(check);
-    if (p.lte[0] !== "self:level") throw new Error(`Unsupported operand ${p.lte[0]}`);
-    return level <= p.lte[1];
+    const actual =
+      typeof values === "number"
+        ? p.lte[0] === "self:level"
+          ? values
+          : undefined
+        : values[p.lte[0]];
+    if (actual === undefined) throw new Error(`Unsupported operand ${p.lte[0]}`);
+    return actual <= p.lte[1];
   });
 
 describe("benefits rules table", () => {
@@ -80,7 +95,7 @@ describe("academia bonus feat items", () => {
     expect(STANDING_FEATS).toHaveLength(RANKS.length + BRANCH_IDS.length * 3);
     expect(CLASSROOM_ADVANTAGE_FEATS).toHaveLength(STUDENT_IDS.length);
     expect(BENEFIT_FEATS).toHaveLength(BRANCH_IDS.length * BENEFITS.length);
-    expect(ACADEMIA_FEATS).toHaveLength(129);
+    expect(ACADEMIA_FEATS).toHaveLength(130);
 
     const ids = new Set<string>();
     const names = new Set<string>();
@@ -172,7 +187,7 @@ describe("academia bonus feat items", () => {
       const desc = item.system.description.value;
       const plain = desc.replace(/@UUID\[[^\]]+\]\{([^}]+)\}/g, "$1");
       expect(plain.length, `${item.name}: ${plain}`).toBeLessThanOrEqual(MAX_DESCRIPTION_LENGTH);
-      expect(desc).toMatch(/^<p>[^<]+\(p\. (?:11|6[2-5]|6[7-9]|7[01])\)\.<\/p>$/);
+      expect(desc).toMatch(/^<p>[^<]+\((?:p\. (?:11|6[2-5]|6[7-9]|7[01])|pp\. 44–45)\)\.<\/p>$/);
     }
   });
 
@@ -209,36 +224,98 @@ describe("academia bonus feat items", () => {
     expect(emeraldLore?.system.description.value).toContain("Manual: set Lore to");
   });
 
-  it("automates Dedicated Attendant rank check and Arcana/Nature skill upgrade", () => {
+  it("automates Dedicated Attendant rank check and Magaambyan Attendant Dedication companion rules", () => {
     const feat = BENEFIT_FEATS.find(
       (f) => f.name === "Cascade Bearers (Level 3): Dedicated Attendant",
     );
     expect(feat?.system.description.value).toBe(
-      "<p>Grants Magaambyan Attendant Dedication once. Manual: pick cantrip (p. 64).</p>",
+      "<p>Grants Magaambyan Attendant Dedication and companion rules once. Manual: pick cantrip (p. 64).</p>",
     );
-    const choiceSet = feat?.system.rules.find((r) => r.key === "ChoiceSet");
-    expect(choiceSet).toMatchObject({
-      flag: "skill",
-      rollOption: "dedicated-attendant-skill",
+    expect(feat?.system.rules.filter((r) => r.key === "GrantItem")).toEqual(
+      [
+        PF2E_FEAT_UUIDS["magaambyan-attendant-dedication"],
+        MAGAAMBYAN_ATTENDANT_RULES_FEAT._stats.compendiumSource,
+      ].map((uuid) => ({
+        key: "GrantItem",
+        uuid,
+        predicate: ATTENDANT_PLUS_PREDICATE,
+        reevaluateOnUpdate: true,
+        allowDuplicate: false,
+      })),
+    );
+
+    const rulesFeat = MAGAAMBYAN_ATTENDANT_RULES_FEAT;
+    expect(ACADEMIA_FEATS).toContain(rulesFeat);
+    expect(rulesFeat.name).toBe("Magaambyan Attendant Dedication Rules");
+    expect(rulesFeat.system.level.value).toBe(2);
+    expect(rulesFeat.system.description.value).toContain(
+      `@UUID[${PF2E_FEAT_UUIDS["magaambyan-attendant-dedication"]}]{Magaambyan Attendant Dedication}`,
+    );
+
+    const cs = (flag: string) =>
+      rulesFeat.system.rules.find((r) => r.key === "ChoiceSet" && r.flag === flag);
+    const skillCs = cs("skill")!;
+    expect(skillCs).toMatchObject({
+      rollOption: "magaambyan-attendant-skill",
       allowNoSelection: true,
-      predicate: [
-        {
-          or: ["academia:rank:attendant", "academia:rank:conversant", "academia:rank:lore-speaker"],
-        },
-        { not: "feat:magaambyan-attendant-dedication" },
+      prompt: "PF2E.SpecificRule.Prompt.Skill",
+    });
+    const skillPred = skillCs.predicate as unknown[];
+    const rankMap = (a: number, n: number) => ({ "skill:arcana:rank": a, "skill:nature:rank": n });
+    expect([
+      testPredicate(skillPred, new Set(), rankMap(0, 2)),
+      testPredicate(skillPred, new Set(), rankMap(1, 1)),
+      testPredicate(skillPred, new Set(), rankMap(2, 2)),
+    ]).toEqual([true, true, false]);
+
+    const choices = skillCs.choices as { value: string; predicate: unknown[] }[];
+    const available = (a: number, n: number) =>
+      choices
+        .filter((c) =>
+          testPredicate(
+            c.predicate,
+            new Set([`skill:arcana:rank:${a}`, `skill:nature:rank:${n}`]),
+            {},
+          ),
+        )
+        .map((c) => c.value);
+    expect([available(0, 1), available(1, 0), available(2, 2)]).toEqual([
+      ["arcana-trained", "nature-expert"],
+      ["arcana-expert", "nature-trained"],
+      [],
+    ]);
+
+    for (const [skill, val, rank] of [
+      ["arcana", "arcana-trained", 1],
+      ["arcana", "arcana-expert", 2],
+      ["nature", "nature-trained", 1],
+      ["nature", "nature-expert", 2],
+    ] as const) {
+      expect(rulesFeat.system.rules).toContainEqual({
+        key: "ActiveEffectLike",
+        mode: "upgrade",
+        path: `system.skills.${skill}.rank`,
+        value: rank,
+        predicate: [`magaambyan-attendant-skill:${val}`],
+      });
+    }
+
+    expect(cs("tradition")).toMatchObject({
+      rollOption: "magaambyan-attendant:tradition",
+      prompt: "PF2E.SpecificRule.Prompt.Tradition",
+      choices: [
+        { label: "Arcane (Intelligence)", value: "arcane" },
+        { label: "Primal (Wisdom)", value: "primal" },
       ],
     });
-    const grant = feat?.system.rules.find((r) => r.key === "GrantItem");
-    expect(grant).toMatchObject({
-      uuid: PF2E_FEAT_UUIDS["magaambyan-attendant-dedication"],
-      predicate: [
-        {
-          or: ["academia:rank:attendant", "academia:rank:conversant", "academia:rank:lore-speaker"],
-        },
-      ],
-      reevaluateOnUpdate: true,
-      allowDuplicate: false,
-    });
+    expect(cs("branch")).toBeUndefined();
+    expect(rulesFeat.system.description.value).not.toContain("branch");
+    expect(
+      rulesFeat.system.rules.filter(
+        (r) =>
+          r.key === "ActiveEffectLike" && String(r.path).startsWith("flags.thousands.attendant."),
+      ),
+    ).toHaveLength(0);
   });
 
   it("filters granted skill feats by tier max level and branch feats by prerequisites", () => {

@@ -13,6 +13,23 @@ export const RANKS = ["initiate", "attendant", "conversant", "lore-speaker"] as 
 export type Rank = (typeof RANKS)[number];
 export type Activity = "study" | "cram" | "practical-research";
 
+export const RANK_LABELS: Record<Rank, string> = {
+  initiate: "Initiate",
+  attendant: "Attendant",
+  conversant: "Conversant",
+  "lore-speaker": "Lore-Speaker",
+};
+
+export const isRank = (value: unknown): value is Rank =>
+  typeof value === "string" && (RANKS as readonly string[]).includes(value);
+
+export const rankIndex = (rank: Rank): number => RANKS.indexOf(rank);
+
+export const nextRank = (rank: Rank): Rank | null => RANKS[rankIndex(rank) + 1] ?? null;
+
+export const isAttendantOrHigher = (rank: Rank): boolean =>
+  rankIndex(rank) >= rankIndex("attendant");
+
 export interface BranchState {
   level: number;
   /** Set when an outcome exceeded the cap; resolved on the next level-up. */
