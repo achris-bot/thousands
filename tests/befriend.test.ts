@@ -132,26 +132,44 @@ describe("befriend rules and state", () => {
       key: "criticalSuccess",
       note: "Returned lost chicken",
     };
-    expect(planBefriend(actor, reach)).toMatchObject({
+    expect(planBefriend(actor, reach)).toEqual({
       previous: "indifferent",
       next: "helpful",
       grantFeat: true,
       removeFeat: false,
+      summary: "Anchor Root: Indifferent → Helpful; now befriended; Returned lost chicken.",
+    });
+    expect(describeBefriendEntry([actor], reach)).toEqual({
+      text: "Anchor Root: Indifferent → Helpful; now befriended; Returned lost chicken.",
+      done: false,
     });
     expect(await applyBefriend(actor, reach)).toBe(true);
     expect(await applyBefriend(actor, reach)).toBe(false);
+    expect(describeBefriendEntry([actor], reach)).toEqual({
+      text: "applied (Anchor Root: Helpful; now befriended).",
+      done: true,
+    });
     expect(readBefriendState(actor)["anchor-root"]).toMatchObject({
       attitude: "helpful",
       ownsFeat: true,
       notes: ["Returned lost chicken"],
     });
 
-    // Dropping below threshold removes the Classroom Advantage feat.
-    await applyBefriend(actor, {
+    // Dropping below threshold removes the Classroom Advantage feat without naming it in chat.
+    const drop: BefriendEntry = {
       id: "e2",
       student: "anchor-root",
       change: { kind: "delta", steps: -1 },
       key: "delta:-1",
+    };
+    expect(describeBefriendEntry([actor], drop)).toEqual({
+      text: "Anchor Root: Helpful → Friendly; no longer befriended.",
+      done: false,
+    });
+    await applyBefriend(actor, drop);
+    expect(describeBefriendEntry([actor], drop)).toEqual({
+      text: "applied (Anchor Root: Friendly; no longer befriended).",
+      done: true,
     });
     expect(readBefriendState(actor)["anchor-root"]).toMatchObject({
       attitude: "friendly",
@@ -244,17 +262,12 @@ describe("befriend rules and state", () => {
       allowRolls: true,
       threshold: "helpful",
     });
-    expect(a1.skills.diplomacy?.roll).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dc: 15,
-        traits: ["downtime"],
-        extraRollOptions: [
-          befriendOption("id1", "haibram-thodja"),
-          befriendNoteOption("Lofty Leap"),
-          "downtime",
-        ],
-      }),
-    );
+    expect(a1.skills.diplomacy?.roll).toHaveBeenCalledWith({
+      dc: 15,
+      label: "Befriend: Haibram Thodja (Diplomacy)",
+      traits: [],
+      extraRollOptions: [befriendOption("id1", "haibram-thodja"), befriendNoteOption("Lofty Leap")],
+    });
 
     const blockedUi = makeUi(rollPick);
     await startBefriend([a1], blockedUi, { isGM: false, allowRolls: false, threshold: "helpful" });
@@ -354,13 +367,20 @@ describe("befriend rules and state", () => {
     expect(wait.mock.calls.at(-1)![0].content).not.toContain("Pugwampi");
 
     const listeners: Record<string, () => Promise<void>> = {};
+    const cardTexts: string[] = [];
     vi.stubGlobal("document", {
-      createElement: () => ({
+      createElement: (tag: string) => ({
+        tag,
         className: "",
         textContent: "",
         type: "",
         disabled: false,
-        append() {},
+        append(...children: { tag?: string; textContent?: string }[]) {
+          if (tag === "div") {
+            for (const c of children)
+              if (c.tag === "p" && c.textContent) cardTexts.push(c.textContent);
+          }
+        },
         addEventListener(e: string, fn: () => Promise<void>) {
           listeners[e] = fn;
         },
@@ -378,11 +398,21 @@ describe("befriend rules and state", () => {
       },
     });
     renderBefriendCard(msg, html, true);
+    expect(cardTexts.at(-1)).toBe(
+      "Befriending: Nia: Noxolo: Indifferent → Helpful; now befriended | Tarek: Noxolo: Indifferent → Helpful; now befriended.",
+    );
     await listeners.click?.();
     expect([readBefriendState(a1).noxolo.ownsFeat, readBefriendState(a2).noxolo.ownsFeat]).toEqual([
       true,
       true,
     ]);
     expect(msg.update).toHaveBeenCalledOnce();
+    renderBefriendCard(msg, html, true);
+    expect(cardTexts.at(-1)).toBe("Befriending: applied (Noxolo — Nia: Helpful, Tarek: Helpful).");
+    for (const text of cardTexts) {
+      expect(text).not.toContain("Classroom Advantage");
+      expect(text).not.toContain("Lesson of Calamity");
+      expect(text).not.toContain("Stumbling Curse");
+    }
   });
 });
