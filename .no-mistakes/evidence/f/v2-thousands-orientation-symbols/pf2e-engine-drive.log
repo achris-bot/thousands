@@ -1,0 +1,129 @@
+built pack: 129 items; "Orientation Symbol" level 1 category bonus
+description: <p>Symbol: at-will innate cantrip until you learn another; none: +1 status to saves vs spells until level 2. Manual: add cantrip as innate spell (p. 11).</p>
+rules: [
+ {
+  "key": "ChoiceSet",
+  "flag": "symbol",
+  "rollOption": "orientation-symbol",
+  "adjustName": true,
+  "choices": [
+   {
+    "label": "Flickering Candle (Light, primal)",
+    "value": "flickering-candle"
+   },
+   {
+    "label": "Balanced Scales (Guidance, primal)",
+    "value": "balanced-scales"
+   },
+   {
+    "label": "Multipronged Key (Telekinetic Hand, arcane)",
+    "value": "multipronged-key"
+   },
+   {
+    "label": "Pursed Lips (Message, arcane)",
+    "value": "pursed-lips"
+   },
+   {
+    "label": "Open Hand with an Eye in the Palm (Shield, arcane)",
+    "value": "open-hand-with-an-eye"
+   },
+   {
+    "label": "Running Hourglass (Stabilize, primal)",
+    "value": "running-hourglass"
+   },
+   {
+    "label": "No Symbol (+1 vs spells)",
+    "value": "none"
+   }
+  ]
+ },
+ {
+  "key": "FlatModifier",
+  "selector": [
+   "saving-throw"
+  ],
+  "type": "status",
+  "value": 1,
+  "predicate": [
+   "orientation-symbol:none",
+   "item:type:spell",
+   {
+    "lte": [
+     "self:level",
+     1
+    ]
+   }
+  ],
+  "hideIfDisabled": true
+ }
+]
+
+== S1 picking each choice (real ChoiceSet.preCreate)
+  pick flickering-candle -> item name "Orientation Symbol (Flickering Candle (Light, primal))"
+PASS name carries choice label (flickering-candle): got "Orientation Symbol (Flickering Candle (Light, primal))"
+PASS roll option set (flickering-candle): got true
+  pick balanced-scales -> item name "Orientation Symbol (Balanced Scales (Guidance, primal))"
+PASS name carries choice label (balanced-scales): got "Orientation Symbol (Balanced Scales (Guidance, primal))"
+PASS roll option set (balanced-scales): got true
+  pick multipronged-key -> item name "Orientation Symbol (Multipronged Key (Telekinetic Hand, arcane))"
+PASS name carries choice label (multipronged-key): got "Orientation Symbol (Multipronged Key (Telekinetic Hand, arcane))"
+PASS roll option set (multipronged-key): got true
+  pick pursed-lips -> item name "Orientation Symbol (Pursed Lips (Message, arcane))"
+PASS name carries choice label (pursed-lips): got "Orientation Symbol (Pursed Lips (Message, arcane))"
+PASS roll option set (pursed-lips): got true
+  pick open-hand-with-an-eye -> item name "Orientation Symbol (Open Hand with an Eye in the Palm (Shield, arcane))"
+PASS name carries choice label (open-hand-with-an-eye): got "Orientation Symbol (Open Hand with an Eye in the Palm (Shield, arcane))"
+PASS roll option set (open-hand-with-an-eye): got true
+  pick running-hourglass -> item name "Orientation Symbol (Running Hourglass (Stabilize, primal))"
+PASS name carries choice label (running-hourglass): got "Orientation Symbol (Running Hourglass (Stabilize, primal))"
+PASS roll option set (running-hourglass): got true
+  pick none -> item name "Orientation Symbol (No Symbol (+1 vs spells))"
+PASS name carries choice label (none): got "Orientation Symbol (No Symbol (+1 vs spells))"
+PASS roll option set (none): got true
+PASS seven choices offered: got 7
+
+== S2 No Symbol, level 1, save against a spell
+PASS bonus: got 1
+
+== S3 No Symbol, level boundary (same saved item re-prepared)
+PASS level 1 vs spell: got 1
+PASS level 2 vs spell: got 0
+PASS level 3 vs spell: got 0
+PASS level 10 vs spell: got 0
+PASS level 20 vs spell: got 0
+
+== S4 No Symbol, level 1, non-spell saves
+PASS options []: got 0
+PASS options ["item:type:weapon"]: got 0
+PASS options ["item:type:feat","item:trait:magical"]: got 0
+PASS options ["item:type:effect"]: got 0
+
+== S5 each symbol gets no save bonus
+PASS flickering-candle level 1 vs spell: got 0
+PASS flickering-candle level 2 vs spell: got 0
+PASS balanced-scales level 1 vs spell: got 0
+PASS balanced-scales level 2 vs spell: got 0
+PASS multipronged-key level 1 vs spell: got 0
+PASS multipronged-key level 2 vs spell: got 0
+PASS pursed-lips level 1 vs spell: got 0
+PASS pursed-lips level 2 vs spell: got 0
+PASS open-hand-with-an-eye level 1 vs spell: got 0
+PASS open-hand-with-an-eye level 2 vs spell: got 0
+PASS running-hourglass level 1 vs spell: got 0
+PASS running-hourglass level 2 vs spell: got 0
+
+== S6 status stacking
+PASS with another +1 status: got 1
+PASS with +2 status: got 2
+PASS with +1 circumstance: got 2
+
+== S7 cantrip names/traditions in choice labels vs PF2e 8.7.0 spells pack
+PASS Flickering Candle (Light, primal) exists as primal cantrip: got true
+PASS Balanced Scales (Guidance, primal) exists as primal cantrip: got true
+PASS Multipronged Key (Telekinetic Hand, arcane) exists as arcane cantrip: got true
+PASS Pursed Lips (Message, arcane) exists as arcane cantrip: got true
+PASS Open Hand with an Eye in the Palm (Shield, arcane) exists as arcane cantrip: got true
+PASS Running Hourglass (Stabilize, primal) exists as primal cantrip: got true
+PASS no Note/GrantItem rules: got ["ChoiceSet","FlatModifier"]
+
+failures: 0
