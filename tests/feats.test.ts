@@ -4,7 +4,6 @@ import {
   BENEFIT_FEATS,
   CLASSROOM_ADVANTAGE_FEATS,
   MAX_DESCRIPTION_LENGTH,
-  ORIENTATION_SYMBOLS,
   ORIENTATION_SYMBOL_FEAT,
   ORIENTATION_SYMBOL_IDS,
   PACK_ID,
@@ -525,23 +524,18 @@ describe("academia bonus feat items", () => {
       adjustName: true,
     });
     expect(choiceSets[0]?.choices).toEqual([
-      { label: "Flickering Candle (Light)", value: "flickering-candle" },
-      { label: "Balanced Scales (Guidance)", value: "balanced-scales" },
-      { label: "Multipronged Key (Telekinetic Hand)", value: "multipronged-key" },
-      { label: "Pursed Lips (Message)", value: "pursed-lips" },
-      { label: "Open Hand with an Eye in the Palm (Shield)", value: "open-hand-with-an-eye" },
-      { label: "Running Hourglass (Stabilize)", value: "running-hourglass" },
+      { label: "Flickering Candle (Light, primal)", value: "flickering-candle" },
+      { label: "Balanced Scales (Guidance, primal)", value: "balanced-scales" },
+      { label: "Multipronged Key (Telekinetic Hand, arcane)", value: "multipronged-key" },
+      { label: "Pursed Lips (Message, arcane)", value: "pursed-lips" },
+      {
+        label: "Open Hand with an Eye in the Palm (Shield, arcane)",
+        value: "open-hand-with-an-eye",
+      },
+      { label: "Running Hourglass (Stabilize, primal)", value: "running-hourglass" },
       { label: "No Symbol (+1 vs spells)", value: "none" },
     ]);
     expect(ORIENTATION_SYMBOL_IDS).toHaveLength(6);
-    expect(Object.values(ORIENTATION_SYMBOLS).map((s) => [s.cantrip, s.tradition])).toEqual([
-      ["light", "primal"],
-      ["guidance", "primal"],
-      ["telekinetic-hand", "arcane"],
-      ["message", "arcane"],
-      ["shield", "arcane"],
-      ["stabilize", "primal"],
-    ]);
   });
 
   it("gates the +1 status bonus vs spells to level 1 without cantrip Note rules", () => {

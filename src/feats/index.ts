@@ -60,29 +60,16 @@ export const PF2E_UNLOCK_UUIDS = {
   "friendfetch": { uuid: `${SP}TjrZGl8z2INgf3vi`, label: "Friendfetch" },
 } as const;
 
-/** Verified PF2e 8.7.0 cantrip UUIDs granted by Takulu's Orientation Magic Symbols (remaster names). */
-// prettier-ignore
-export const PF2E_CANTRIP_UUIDS = {
-  "light": { uuid: `${SP}WBmvzNDfpwka3qT4`, label: "Light" },
-  "guidance": { uuid: `${SP}izcxFQFwf3woCnFs`, label: "Guidance" },
-  "telekinetic-hand": { uuid: `${SP}pwzdSlJgYqN7bs2w`, label: "Telekinetic Hand" },
-  "message": { uuid: `${SP}vLzFcIaSXs7YTIqJ`, label: "Message" },
-  "shield": { uuid: `${SP}TVKNbcgTee19PXZR`, label: "Shield" },
-  "stabilize": { uuid: `${SP}SnjhtQYexDtNDdEg`, label: "Stabilize" },
-} as const;
-
-export type CantripSlug = keyof typeof PF2E_CANTRIP_UUIDS;
-
 /** Book 1 p. 11: each symbol grants one innate cantrip (Light replaces dancing lights, Telekinetic Hand replaces mage hand). */
 // prettier-ignore
 export const ORIENTATION_SYMBOLS = {
-  "flickering-candle": { label: "Flickering Candle", cantrip: "light", tradition: "primal" },
-  "balanced-scales": { label: "Balanced Scales", cantrip: "guidance", tradition: "primal" },
-  "multipronged-key": { label: "Multipronged Key", cantrip: "telekinetic-hand", tradition: "arcane" },
-  "pursed-lips": { label: "Pursed Lips", cantrip: "message", tradition: "arcane" },
-  "open-hand-with-an-eye": { label: "Open Hand with an Eye in the Palm", cantrip: "shield", tradition: "arcane" },
-  "running-hourglass": { label: "Running Hourglass", cantrip: "stabilize", tradition: "primal" },
-} as const satisfies Record<string, { label: string; cantrip: CantripSlug; tradition: "arcane" | "primal" }>;
+  "flickering-candle": { label: "Flickering Candle", cantrip: "Light", tradition: "primal" },
+  "balanced-scales": { label: "Balanced Scales", cantrip: "Guidance", tradition: "primal" },
+  "multipronged-key": { label: "Multipronged Key", cantrip: "Telekinetic Hand", tradition: "arcane" },
+  "pursed-lips": { label: "Pursed Lips", cantrip: "Message", tradition: "arcane" },
+  "open-hand-with-an-eye": { label: "Open Hand with an Eye in the Palm", cantrip: "Shield", tradition: "arcane" },
+  "running-hourglass": { label: "Running Hourglass", cantrip: "Stabilize", tradition: "primal" },
+} as const satisfies Record<string, { label: string; cantrip: string; tradition: "arcane" | "primal" }>;
 
 export type OrientationSymbolId = keyof typeof ORIENTATION_SYMBOLS;
 export const ORIENTATION_SYMBOL_IDS = Object.keys(ORIENTATION_SYMBOLS) as OrientationSymbolId[];
@@ -656,7 +643,7 @@ const FIRST_LEVEL_ONLY = { lte: ["self:level", 1] };
 function buildOrientationSymbolFeat(): PF2eFeatSource {
   const choices = ORIENTATION_SYMBOL_IDS.map((id) => {
     const s = ORIENTATION_SYMBOLS[id];
-    return { label: `${s.label} (${PF2E_CANTRIP_UUIDS[s.cantrip].label})`, value: id };
+    return { label: `${s.label} (${s.cantrip}, ${s.tradition})`, value: id };
   });
   return makeFeat(
     "Orientation Symbol",

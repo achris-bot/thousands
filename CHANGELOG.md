@@ -13,7 +13,7 @@ All notable changes to this project are documented in this file.
   - 5 Primary Branch feats, 5 Secondary Branch feats, and 5 Branch Star feats.
   - 100 branch benefit feats (levels 1–20 across all 5 branches) with PF2e rule elements (`GrantItem`, `ChoiceSet`, `FlatModifier`, `ActiveEffectLike`, `RollOption`, and `Note`).
   - 9 Spire Dormitory Classroom Advantage feats, applied automatically by `/study` (Study and Cram).
-  - `Orientation Symbol` feat (Book 1 pp. 10–11) with a `ChoiceSet` of Takulu's 6 Orientation Magic Symbols (each naming its at-will innate cantrip on the feat) or no symbol for a +1 status bonus to saving throws against spells at character level 1.
+  - `Orientation Symbol` feat (Book 1 pp. 10–11) with a `ChoiceSet` of Takulu's 6 Orientation Magic Symbols (each naming its at-will innate cantrip and tradition on the feat) or no symbol for a +1 status bonus to saving throws against spells at character level 1.
 - Spire Dormitory student befriending tracker (`/befriend` and `game.modules.get("thousands").api.befriend()`): per-character PF2e attitude tracking with short notes, GM whole-party updates, optional skill-check rolls (toggleable in GM settings), configurable befriended threshold (`Helpful` or `Friendly`), and automatic granting/removal of `Classroom Advantage` feats on chat-card **Apply**.
 - Tag-triggered GitHub release workflow (`.github/workflows/release.yml`) and packaging script (`scripts/package-release.mjs`) that stamps `version`, `manifest`, and `download` URLs into `dist/module.json` and packages `dist/` into `module.zip`.
 - MIT `LICENSE` and Paizo Community Use Policy notice.

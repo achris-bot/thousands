@@ -5,7 +5,6 @@ import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
   ORIENTATION_SYMBOLS,
-  PF2E_CANTRIP_UUIDS,
   PF2E_FEAT_UUIDS,
   PF2E_SCHEMA_VERSION,
   PF2E_UNLOCK_UUIDS,
@@ -158,20 +157,13 @@ describe("real PF2e system data", () => {
       expect(item?.system.traits.rarity).toBe("uncommon");
     }
 
-    for (const [slug, { uuid, label }] of Object.entries(PF2E_CANTRIP_UUIDS)) {
-      const item = unlocksByUuid.get(uuid);
-      expect(item, `${slug} (${uuid})`).toBeDefined();
-      expect(item?.name).toBe(label);
-      expect(item?.system.slug ?? sluggify(item?.name ?? "")).toBe(slug);
-      expect(item?.system.traits).toMatchObject({
-        rarity: "common",
-        value: expect.arrayContaining(["cantrip"]),
-      });
-    }
+    const cantrips = new Map(
+      [...unlocksByUuid.values()]
+        .filter((item) => item.system.traits.value.includes("cantrip"))
+        .map((item) => [item.name, item]),
+    );
     for (const { cantrip, tradition } of Object.values(ORIENTATION_SYMBOLS)) {
-      expect(
-        unlocksByUuid.get(PF2E_CANTRIP_UUIDS[cantrip].uuid)?.system.traits.traditions,
-      ).toContain(tradition);
+      expect(cantrips.get(cantrip)?.system.traits.traditions, cantrip).toContain(tradition);
     }
   });
 });
