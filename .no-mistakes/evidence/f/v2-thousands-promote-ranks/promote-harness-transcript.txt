@@ -1,0 +1,58 @@
+== S1 GM /promote single character ==
+dialog {"target":{"selected":"Nia (Initiate)","options":["Nia (Initiate)","Tarek (Conversant)","Sera (Initiate)","Pregen (not in party) (Initiate)","Whole party (3 members)"]},"rank":{"selected":"Attendant","options":["Attendant","Conversant","Lore-Speaker"]},"who":null}
+PASS targets list world characters + party, no NPC ["Nia (Initiate)","Tarek (Conversant)","Sera (Initiate)","Pregen (not in party) (Initiate)","Whole party (3 members)"]
+PASS Initiate not offered; default Attendant {"selected":"Attendant","options":["Attendant","Conversant","Lore-Speaker"]}
+PASS changing target to Conversant updates default to Lore-Speaker 
+PASS back to Initiate -> Attendant default 
+cards [{"speaker":"Nia","card":"Academia: Initiate → Attendant.","apply":true}]
+PASS card posted, nothing changed before Apply 
+ranks {"nia":"Academic Rank: Attendant","tarek":"Academic Rank: Conversant","sera":"Academic Rank: Initiate","pregen":"Academic Rank: Initiate"} [{"speaker":"Nia","card":"Academia: applied (Academic Rank: Attendant).","apply":false}] ["via:CHAT_COMMANDS","Nia:create:Academic Rank: Attendant","Nia:delete:Academic Rank: Initiate","Nia:setFlag:thousands.promote"]
+PASS Nia has only Attendant 
+PASS others untouched 
+PASS card shows applied, no button 
+PASS re-render keeps no Apply button 
+== S2 Whole party via api.promote() ==
+card [{"speaker":"Magaambya","card":"Academia: Nia: Initiate → Attendant | Tarek: already Conversant (skipped) | Sera: Initiate → Attendant (re-evaluates Dedicated Attendant).","apply":true}]
+PASS preview lists each member, Tarek skipped, Sera re-evaluates 
+ranks {"nia":"Academic Rank: Attendant","tarek":"Academic Rank: Conversant","sera":"Academic Rank: Attendant","pregen":"Academic Rank: Initiate"} [{"speaker":"Magaambya","card":"Academia: applied (Academic Rank: Attendant — Nia, Sera; skipped: Tarek).","apply":false}]
+document calls ["Nia:create:Academic Rank: Attendant","Nia:delete:Academic Rank: Initiate","Nia:setFlag:thousands.promote","Sera:create:Academic Rank: Attendant","Sera:delete:Academic Rank: Initiate","Sera:setFlag:thousands.promote"]
+PASS party upgraded, higher rank kept, non-member untouched 
+PASS no writes to Tarek/Pregen/NPC 
+PASS Sera order create -> delete -> actor update ["create","delete","setFlag"]
+== S3 adversarial: stale cards, double click, rapid re-promote ==
+cards after Lore-Speaker applied [{"speaker":"Nia","card":"Academia: already Lore-Speaker (skipped).","apply":false},{"speaker":"Nia","card":"Academia: applied (Academic Rank: Lore-Speaker).","apply":false},{"speaker":"Nia","card":"Academia: already Lore-Speaker (skipped).","apply":false}]
+PASS stale lower cards show skipped without Apply [{"speaker":"Nia","card":"Academia: already Lore-Speaker (skipped).","apply":false},{"speaker":"Nia","card":"Academia: applied (Academic Rank: Lore-Speaker).","apply":false},{"speaker":"Nia","card":"Academia: already Lore-Speaker (skipped).","apply":false}]
+PASS only Lore-Speaker owned 
+PASS clicking a detached stale Apply never demotes Academic Rank: Conversant
+triple-click calls ["Pregen (not in party):create:Academic Rank: Attendant","Pregen (not in party):delete:Academic Rank: Initiate","Pregen (not in party):setFlag:thousands.promote"]
+PASS triple click applies once 
+party card {"speaker":"Magaambya","card":"Academia: Nia: already Lore-Speaker (skipped) | Tarek: already Conversant (skipped) | Sera: already Conversant (skipped).","apply":false}
+PASS party card: only below-rank member listed as upgrade 
+PASS cancelling dialog posts nothing 
+== S4 player cannot promote ==
+PASS player /promote warns, no dialog ⚠ Only the GM can promote academic rank.
+PASS player api.promote(actor) warns, no dialog 
+player card [{"speaker":"Nia","card":"Academia: Initiate → Attendant.","apply":false}]
+PASS player sees card without Apply 
+== S5 api.promote(actor), chatMessage-hook path, no party, no characters ==
+{"target":null,"rank":{"selected":"Attendant","options":["Attendant","Conversant","Lore-Speaker"]},"who":"Character: Nia (Initiate)"}
+PASS explicit actor: only that actor, no target select 
+PASS default next rank is attendant 
+nia Academic Rank: Attendant
+PASS default next rank is conversant 
+nia Academic Rank: Conversant
+PASS default next rank is lore-speaker 
+nia Academic Rank: Lore-Speaker
+PASS end of ladder single Lore-Speaker feat 
+PASS hook path opens dialog; no Whole party without active party ["Nia (Lore-Speaker)","Tarek (Conversant)","Sera (Initiate)","Pregen (not in party) (Initiate)"]
+PASS no characters warns 
+PASS api.promote(NPC) warns 
+== S6 built compendium pack ==
+pack key !items!nedGr6vC7gPotif2 uuid Compendium.thousands.academia-feats.Item.nedGr6vC7gPotif2
+companion rules [{"key":"ChoiceSet","flag":"skill","rollOption":"magaambyan-attendant-skill","adjustName":false,"allowNoSelection":true,"prompt":"PF2E.SpecificRule.Prompt.Skill","predicate":[{"or":[{"lte":["skill:arcana:rank",1]},{"lte":["skill:nature:rank",1]}]}],"choices":[{"label":"PF2E.Skill.Arcana","value":"arcana-trained","predicate":["skill:arcana:rank:0"]},{"label":"PF2E.Skill.Arcana","value":"arcana-expert","predicate":["skill:arcana:rank:1"]},{"label":"PF2E.Skill.Nature","value":"nature-trained","predicate":["skill:nature:rank:0"]},{"label":"PF2E.Skill.Nature","value":"nature-expert","predicate":["skill:nature:rank:1"]}]},{"key":"ActiveEffectLike","mode":"upgrade","path":"system.skills.arcana.rank","value":1,"predicate":["magaambyan-attendant-skill:arcana-trained"]},{"key":"ActiveEffectLike","mode":"upgrade","path":"system.skills.arcana.rank","value":2,"predicate":["magaambyan-attendant-skill:arcana-expert"]},{"key":"ActiveEffectLike","mode":"upgrade","path":"system.skills.nature.rank","value":1,"predicate":["magaambyan-attendant-skill:nature-trained"]},{"key":"ActiveEffectLike","mode":"upgrade","path":"system.skills.nature.rank","value":2,"predicate":["magaambyan-attendant-skill:nature-expert"]},{"key":"ChoiceSet","flag":"tradition","rollOption":"magaambyan-attendant:tradition","adjustName":false,"prompt":"PF2E.SpecificRule.Prompt.Tradition","choices":[{"label":"Arcane (Intelligence)","value":"arcane"},{"label":"Primal (Wisdom)","value":"primal"}]}]
+sample Dedicated Attendant rules [{"key":"ActiveEffectLike","mode":"upgrade","path":"flags.thousands.branches.uzunjati.level","value":3},{"key":"RollOption","domain":"all","option":"academia:branch:uzunjati:level:3"},{"key":"GrantItem","uuid":"Compendium.pf2e.feats-srd.Item.ZhToff996PnTESwb","predicate":[{"or":["academia:rank:attendant","academia:rank:conversant","academia:rank:lore-speaker"]}],"reevaluateOnUpdate":true,"allowDuplicate":false},{"key":"GrantItem","uuid":"Compendium.thousands.academia-feats.Item.nedGr6vC7gPotif2","predicate":[{"or":["academia:rank:attendant","academia:rank:conversant","academia:rank:lore-speaker"]}],"reevaluateOnUpdate":true,"allowDuplicate":false}]
+PASS companion in pack under resolvable key 
+PASS 5 Dedicated Attendant feats grant dedication + companion, gated to Attendant+ 
+PASS unique ids 
+PASS no page errors []
+failed checks: 0

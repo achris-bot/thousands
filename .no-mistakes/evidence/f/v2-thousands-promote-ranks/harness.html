@@ -1,0 +1,77 @@
+<!doctype html><meta charset="utf-8"><title>thousands harness</title>
+<link rel="stylesheet" href="/dist/styles/module.css">
+<style>
+ body{font:14px sans-serif;margin:0;display:grid;grid-template-columns:1fr 440px;gap:12px;padding:12px;background:#eee}
+ h1{grid-column:1/-1;font-size:15px;margin:0} section{background:#fff;border:1px solid #bbb;padding:10px;border-radius:6px}
+ .sheet{border-bottom:1px solid #ddd;padding:5px 0} .sheet ul{margin:3px 0} .msg{border:1px solid #999;border-radius:4px;padding:6px;margin:6px 0;background:#faf8f2}
+ .msg header{font-weight:bold} .thousands-promote{border-top:1px dashed #999} button{padding:3px 14px}
+ dialog form{display:flex;flex-direction:column;gap:8px;min-width:360px} #toast{color:#a00;font-weight:bold;min-height:18px}
+</style>
+<h1>Local browser harness (emulated Foundry globals, synthetic actors) running built dist/module.js — user: <span id="who"></span></h1>
+<section><b>Character sheets (feats owned)</b><div id="sheets"></div></section>
+<section><b>Chat</b><div id="toast"></div><div id="chat"></div><input id="input" placeholder="chat input" style="width:95%"></section>
+<script type="module">
+const isGM = new URLSearchParams(location.search).get("gm") !== "0";
+const pack = await (await fetch("/pack.json")).json();
+const feat = (name) => { const f = pack.find(p => p.name === name); if (!f) throw new Error(name); return structuredClone(f); };
+let n = 0; const rid = () => "id" + (++n) + Math.random().toString(36).slice(2,8);
+window.calls = [];
+const actors = [];
+function mk(id, name, feats, type="character") {
+  const a = { id, name, type, level: 3, flags: {}, items: [],
+    getFlag: (s,k) => a.flags[s]?.[k],
+    async setFlag(s,k,v){ calls.push(`${name}:setFlag:${s}.${k}`); (a.flags[s] ??= {})[k] = structuredClone(v); draw(); },
+    async createEmbeddedDocuments(t, src){ for (const x of src) { calls.push(`${name}:create:${x.name}`); a.items.push({ ...structuredClone(x), id: rid() }); } draw(); },
+    async deleteEmbeddedDocuments(t, ids){ for (const i of ids) calls.push(`${name}:delete:${a.items.find(x=>x.id===i)?.name}`); a.items = a.items.filter(x => !ids.includes(x.id)); draw(); },
+  };
+  a.items = feats.map(f => ({ ...feat(f), id: rid() })); actors.push(a); return a;
+}
+mk("nia","Nia",["Academic Rank: Initiate"]);
+mk("tarek","Tarek",["Academic Rank: Conversant"]);
+mk("sera","Sera",["Academic Rank: Initiate","Cascade Bearers (Level 3): Dedicated Attendant"]);
+mk("pregen","Pregen (not in party)",["Academic Rank: Initiate"]);
+mk("npc","Pugwampi (NPC)",[],"npc");
+const by = (id) => actors.find(a => a.id === id);
+window.by = by;
+window.rankFeats = (id) => by(id).items.map(i=>i.name).filter(x=>x.startsWith("Academic Rank"));
+function draw(){ document.querySelector("#sheets").innerHTML = actors.map(a => `<div class="sheet" data-id="${a.id}"><b>${a.name}</b><ul>${a.items.map(i=>`<li>${i.name}</li>`).join("")}</ul></div>`).join(""); }
+document.querySelector("#who").textContent = isGM ? "GM" : "Player";
+const hooks = {};
+window.Hooks = { on:(n,f)=>((hooks[n]??=[]).push(f)), once:(n,f)=>((hooks[n]??=[]).push(f)) };
+const mod = {}; const CHAT_COMMANDS = {};
+window.mod = mod;
+const collection = Object.assign([...actors], { party: { members: [by("nia"), by("tarek"), by("sera"), by("npc")] } });
+window.gameActors = collection;
+window.game = { user: { id:"u", isGM, isActiveGM: isGM, character: null }, actors: collection,
+  settings: { register(){}, get(){} }, modules: { get: () => mod } };
+window.canvas = { tokens: { controlled: [] } };
+window.ui = { notifications: { warn: (t) => { calls.push("warn:"+t); document.querySelector("#toast").textContent = "⚠ " + t; } } };
+const esc = (s) => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+window.foundry = { utils: { randomID: rid, escapeHTML: esc }, applications: {
+  sidebar: { tabs: { ChatLog: { CHAT_COMMANDS } } },
+  api: { DialogV2: { wait(cfg){ return new Promise(res => {
+    const d = document.createElement("dialog"); d.innerHTML = `<h3>${cfg.window.title}</h3><form>${cfg.content}<div class="btns"></div></form>`;
+    const form = d.querySelector("form"); form.onsubmit = e => e.preventDefault();
+    for (const b of cfg.buttons) { const el = document.createElement("button"); el.type="button"; el.textContent = b.label; el.dataset.action = b.action;
+      el.onclick = () => { const r = b.callback?.(null, el, d); d.remove(); res(r ?? b.action); }; form.querySelector(".btns").append(el); }
+    d.addEventListener("close", () => { d.remove(); res(null); });
+    document.body.append(d); d.showModal(); cfg.render?.(null, { element: d });
+  }); } } } } };
+window.messages = [];
+function renderChat(){ const c = document.querySelector("#chat"); c.innerHTML = "";
+  messages.forEach((m,i) => { const el = document.createElement("div"); el.className="msg"; el.dataset.i=i;
+    el.innerHTML = `<header>${m.speaker.alias}</header><div class="message-content">${m.content}</div>`; c.append(el);
+    for (const f of hooks.renderChatMessageHTML ?? []) f(m, el); }); }
+window.renderChat = renderChat;
+window.ChatMessage = { getSpeaker: ({actor, alias}={}) => actor ? { actor: actor.id, alias: actor.name } : { alias },
+  async create(d){ const m = { ...structuredClone(d), actor: d.speaker.actor ? by(d.speaker.actor) : null,
+    async update(ch){ for (const [k,v] of Object.entries(ch)) { const p=k.split("."); let o=m; while(p.length>1) o = (o[p.shift()] ??= {}); o[p[0]] = v; } renderChat(); } };
+    messages.push(m); renderChat(); for (const f of hooks.createChatMessage ?? []) f(m); return m; } };
+document.querySelector("#input").addEventListener("keydown", (e) => { if (e.key !== "Enter") return; const t = e.target.value; e.target.value="";
+  const cmd = Object.values(CHAT_COMMANDS).find(c => c.rgx.test(t)); if (cmd && !window.useHook) { calls.push("via:CHAT_COMMANDS"); cmd.fn(); return; }
+  for (const f of hooks.chatMessage ?? []) if (f({}, t) === false) { calls.push("via:chatMessage-hook"); return; } });
+draw();
+await import("/dist/module.js");
+for (const f of hooks.init ?? []) f();
+window.ready = true;
+</script>
