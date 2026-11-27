@@ -4,6 +4,9 @@ import {
   BENEFIT_FEATS,
   CLASSROOM_ADVANTAGE_FEATS,
   MAX_DESCRIPTION_LENGTH,
+  ORIENTATION_SYMBOLS,
+  ORIENTATION_SYMBOL_FEAT,
+  ORIENTATION_SYMBOL_IDS,
   PACK_ID,
   PF2E_FEAT_UUIDS,
   PF2E_UNLOCK_UUIDS,
@@ -46,6 +49,17 @@ const VALID_SELECTORS = new Set([
 ]);
 const VALID_UUIDS = new Set<string>(Object.values(PF2E_FEAT_UUIDS));
 
+/** Minimal PF2e predicate evaluator covering the atoms and operators these feats use. */
+type Predicate = string | { not: Predicate } | { or: Predicate[] } | { lte: [string, number] };
+const testPredicate = (preds: unknown[], options: Set<string>, level: number): boolean =>
+  (preds as Predicate[]).every(function check(p: Predicate): boolean {
+    if (typeof p === "string") return options.has(p);
+    if ("not" in p) return !check(p.not);
+    if ("or" in p) return p.or.some(check);
+    if (p.lte[0] !== "self:level") throw new Error(`Unsupported operand ${p.lte[0]}`);
+    return level <= p.lte[1];
+  });
+
 describe("benefits rules table", () => {
   it("covers branch levels 1 to 20 and slices unlocked benefits", () => {
     expect(BENEFITS).toHaveLength(MAX_BRANCH_LEVEL);
@@ -67,7 +81,7 @@ describe("academia bonus feat items", () => {
     expect(STANDING_FEATS).toHaveLength(RANKS.length + BRANCH_IDS.length * 3);
     expect(CLASSROOM_ADVANTAGE_FEATS).toHaveLength(STUDENT_IDS.length);
     expect(BENEFIT_FEATS).toHaveLength(BRANCH_IDS.length * BENEFITS.length);
-    expect(ACADEMIA_FEATS).toHaveLength(128);
+    expect(ACADEMIA_FEATS).toHaveLength(129);
 
     const ids = new Set<string>();
     const names = new Set<string>();
@@ -159,7 +173,7 @@ describe("academia bonus feat items", () => {
       const desc = item.system.description.value;
       const plain = desc.replace(/@UUID\[[^\]]+\]\{([^}]+)\}/g, "$1");
       expect(plain.length, `${item.name}: ${plain}`).toBeLessThanOrEqual(MAX_DESCRIPTION_LENGTH);
-      expect(desc).toMatch(/^<p>[^<]+\(p\. (?:6[2-5]|6[7-9]|7[01])\)\.<\/p>$/);
+      expect(desc).toMatch(/^<p>[^<]+\(p\. (?:11|6[2-5]|6[7-9]|7[01])\)\.<\/p>$/);
     }
   });
 
@@ -495,5 +509,53 @@ describe("academia bonus feat items", () => {
     expect(update).not.toHaveBeenCalled();
     expect(await consumeDailyFeatUse(msg("cascade-bearers"))).toBe(1);
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ "system.frequency.value": 0 }));
+  });
+
+  it("offers the 6 Orientation Symbols plus no symbol in one ChoiceSet", () => {
+    const feat = ORIENTATION_SYMBOL_FEAT;
+    expect(ACADEMIA_FEATS).toContain(feat);
+    expect(feat.name).toBe("Orientation Symbol");
+    expect(feat.system.level.value).toBe(1);
+    expect(feat.system.publication.title).toBe("Pathfinder #169: Kindled Magic");
+    const choiceSets = feat.system.rules.filter((r) => r.key === "ChoiceSet");
+    expect(choiceSets).toHaveLength(1);
+    expect(choiceSets[0]).toMatchObject({
+      flag: "symbol",
+      rollOption: "orientation-symbol",
+      adjustName: true,
+    });
+    expect(choiceSets[0]?.choices).toEqual([
+      { label: "Flickering Candle (Light)", value: "flickering-candle" },
+      { label: "Balanced Scales (Guidance)", value: "balanced-scales" },
+      { label: "Multipronged Key (Telekinetic Hand)", value: "multipronged-key" },
+      { label: "Pursed Lips (Message)", value: "pursed-lips" },
+      { label: "Open Hand with an Eye in the Palm (Shield)", value: "open-hand-with-an-eye" },
+      { label: "Running Hourglass (Stabilize)", value: "running-hourglass" },
+      { label: "No Symbol (+1 vs spells)", value: "none" },
+    ]);
+    expect(ORIENTATION_SYMBOL_IDS).toHaveLength(6);
+    expect(Object.values(ORIENTATION_SYMBOLS).map((s) => [s.cantrip, s.tradition])).toEqual([
+      ["light", "primal"],
+      ["guidance", "primal"],
+      ["telekinetic-hand", "arcane"],
+      ["message", "arcane"],
+      ["shield", "arcane"],
+      ["stabilize", "primal"],
+    ]);
+  });
+
+  it("gates the +1 status bonus vs spells to level 1 without cantrip Note rules", () => {
+    const rules = ORIENTATION_SYMBOL_FEAT.system.rules;
+    expect(rules.filter((r) => r.key === "Note")).toHaveLength(0);
+    const mod = rules.find((r) => r.key === "FlatModifier")!;
+    expect(mod).toMatchObject({ selector: ["saving-throw"], type: "status", value: 1 });
+    const pred = mod.predicate as unknown[];
+    const vsSpell = (choice: string) =>
+      new Set([`orientation-symbol:${choice}`, "item:type:spell"]);
+    expect(testPredicate(pred, vsSpell("none"), 1)).toBe(true);
+    expect(testPredicate(pred, vsSpell("none"), 2)).toBe(false);
+    expect(testPredicate(pred, new Set(["orientation-symbol:none"]), 1)).toBe(false);
+    for (const id of ORIENTATION_SYMBOL_IDS)
+      expect(testPredicate(pred, vsSpell(id), 1)).toBe(false);
   });
 });

@@ -60,6 +60,33 @@ export const PF2E_UNLOCK_UUIDS = {
   "friendfetch": { uuid: `${SP}TjrZGl8z2INgf3vi`, label: "Friendfetch" },
 } as const;
 
+/** Verified PF2e 8.7.0 cantrip UUIDs granted by Takulu's Orientation Magic Symbols (remaster names). */
+// prettier-ignore
+export const PF2E_CANTRIP_UUIDS = {
+  "light": { uuid: `${SP}WBmvzNDfpwka3qT4`, label: "Light" },
+  "guidance": { uuid: `${SP}izcxFQFwf3woCnFs`, label: "Guidance" },
+  "telekinetic-hand": { uuid: `${SP}pwzdSlJgYqN7bs2w`, label: "Telekinetic Hand" },
+  "message": { uuid: `${SP}vLzFcIaSXs7YTIqJ`, label: "Message" },
+  "shield": { uuid: `${SP}TVKNbcgTee19PXZR`, label: "Shield" },
+  "stabilize": { uuid: `${SP}SnjhtQYexDtNDdEg`, label: "Stabilize" },
+} as const;
+
+export type CantripSlug = keyof typeof PF2E_CANTRIP_UUIDS;
+
+/** Book 1 p. 11: each symbol grants one innate cantrip (Light replaces dancing lights, Telekinetic Hand replaces mage hand). */
+// prettier-ignore
+export const ORIENTATION_SYMBOLS = {
+  "flickering-candle": { label: "Flickering Candle", cantrip: "light", tradition: "primal" },
+  "balanced-scales": { label: "Balanced Scales", cantrip: "guidance", tradition: "primal" },
+  "multipronged-key": { label: "Multipronged Key", cantrip: "telekinetic-hand", tradition: "arcane" },
+  "pursed-lips": { label: "Pursed Lips", cantrip: "message", tradition: "arcane" },
+  "open-hand-with-an-eye": { label: "Open Hand with an Eye in the Palm", cantrip: "shield", tradition: "arcane" },
+  "running-hourglass": { label: "Running Hourglass", cantrip: "stabilize", tradition: "primal" },
+} as const satisfies Record<string, { label: string; cantrip: CantripSlug; tradition: "arcane" | "primal" }>;
+
+export type OrientationSymbolId = keyof typeof ORIENTATION_SYMBOLS;
+export const ORIENTATION_SYMBOL_IDS = Object.keys(ORIENTATION_SYMBOLS) as OrientationSymbolId[];
+
 export type RuleElementKey =
   | "ActiveEffectLike"
   | "ChoiceSet"
@@ -622,10 +649,44 @@ function buildClassroomAdvantageFeats(): PF2eFeatSource[] {
   });
 }
 
+const ORIENTATION_OPTION = "orientation-symbol";
+const FIRST_LEVEL_ONLY = { lte: ["self:level", 1] };
+
+/** Takulu's Orientation Magic Symbols (Book 1 pp. 10-11), active only at character level 1. */
+function buildOrientationSymbolFeat(): PF2eFeatSource {
+  const choices = ORIENTATION_SYMBOL_IDS.map((id) => {
+    const s = ORIENTATION_SYMBOLS[id];
+    return { label: `${s.label} (${PF2E_CANTRIP_UUIDS[s.cantrip].label})`, value: id };
+  });
+  return makeFeat(
+    "Orientation Symbol",
+    1,
+    "Symbol: at-will innate cantrip until you learn another; none: +1 status to saves vs spells until level 2. Manual: add cantrip as innate spell (p. 11).",
+    [
+      {
+        key: "ChoiceSet",
+        flag: "symbol",
+        rollOption: ORIENTATION_OPTION,
+        adjustName: true,
+        choices: [...choices, { label: "No Symbol (+1 vs spells)", value: "none" }],
+      },
+      {
+        key: "FlatModifier",
+        selector: ["saving-throw"],
+        type: "status",
+        value: 1,
+        predicate: [`${ORIENTATION_OPTION}:none`, "item:type:spell", FIRST_LEVEL_ONLY],
+        hideIfDisabled: true,
+      },
+    ],
+  );
+}
+
+export const ORIENTATION_SYMBOL_FEAT: PF2eFeatSource = buildOrientationSymbolFeat();
 export const STANDING_FEATS: readonly PF2eFeatSource[] = buildStandingFeats();
 export const CLASSROOM_ADVANTAGE_FEATS: readonly PF2eFeatSource[] = buildClassroomAdvantageFeats();
 export const BENEFIT_FEATS: readonly PF2eFeatSource[] = BRANCH_IDS.flatMap((branchId) =>
   BENEFITS.map((benefit) => buildBenefitFeat(branchId, benefit)),
 );
 // prettier-ignore
-export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];
+export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ORIENTATION_SYMBOL_FEAT, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];
