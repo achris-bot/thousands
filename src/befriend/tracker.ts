@@ -1,5 +1,4 @@
 import { MODULE_ID } from "../constants.js";
-import { PF2E_UNLOCK_UUIDS } from "../feats/index.js";
 import {
   ATTITUDE_LABELS,
   DEFAULT_ATTITUDE,
@@ -190,17 +189,14 @@ export function planBefriend(
     !isBefriended(next, threshold) &&
     st.ownsFeat;
   const student = STUDENTS[entry.student];
-  const unlocks = student.unlocks
-    .map((u) => PF2E_UNLOCK_UUIDS[u as keyof typeof PF2E_UNLOCK_UUIDS]?.label ?? u)
-    .join(" and ");
   const shift =
     next === st.attitude
       ? `${student.label} remains ${ATTITUDE_LABELS[next]}`
       : `${student.label}: ${ATTITUDE_LABELS[st.attitude]} → ${ATTITUDE_LABELS[next]}`;
   const parts = [
     shift,
-    ...(grantFeat ? [`grants Classroom Advantage: ${student.label} (unlocks ${unlocks})`] : []),
-    ...(removeFeat ? [`removes Classroom Advantage: ${student.label}`] : []),
+    ...(grantFeat ? ["now befriended"] : []),
+    ...(removeFeat ? ["no longer befriended"] : []),
     ...(entry.note ? [entry.note] : []),
   ];
   return { previous: st.attitude, next, grantFeat, removeFeat, summary: `${parts.join("; ")}.` };
@@ -271,12 +267,12 @@ export function describeBefriendEntry(
     const label = STUDENTS[entry.student].label;
     if (recs.length === 1) {
       const r = recs[0]!.applied!;
-      const feat = r.grantedFeat
-        ? "; Classroom Advantage granted"
+      const status = r.grantedFeat
+        ? "; now befriended"
         : r.removedFeat
-          ? "; Classroom Advantage removed"
+          ? "; no longer befriended"
           : "";
-      return { text: `applied (${label}: ${ATTITUDE_LABELS[r.next]}${feat}).`, done: true };
+      return { text: `applied (${label}: ${ATTITUDE_LABELS[r.next]}${status}).`, done: true };
     }
     return {
       text: `applied (${label} — ${recs.map((r) => `${r.actor.name}: ${ATTITUDE_LABELS[r.applied!.next]}`).join(", ")}).`,
@@ -317,11 +313,10 @@ export async function startBefriend(
     await stat.roll({
       dc,
       label: `Befriend: ${STUDENTS[picked.student].label} (${stat.label})`,
-      traits: ["downtime"],
+      traits: [],
       extraRollOptions: [
         befriendOption(id, picked.student),
         ...(note ? [befriendNoteOption(note)] : []),
-        "downtime",
       ],
     });
     return;
