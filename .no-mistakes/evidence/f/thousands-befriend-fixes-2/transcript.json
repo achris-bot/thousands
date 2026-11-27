@@ -1,0 +1,895 @@
+{
+  "log": {
+    "base": {
+      "playerRoll": {
+        "args": {
+          "dc": 18,
+          "label": "Befriend: Mariama Keitana (Diplomacy)",
+          "traits": [
+            "downtime"
+          ],
+          "extraRollOptions": [
+            "thousands:befriend:r6hzts73d6:mariama-keitana",
+            "thousands:befriend-note:Shared%20notes",
+            "downtime"
+          ]
+        },
+        "tags": [
+          "downtime"
+        ],
+        "options": [
+          "thousands:befriend:r6hzts73d6:mariama-keitana",
+          "thousands:befriend-note:Shared%20notes",
+          "downtime",
+          "downtime"
+        ],
+        "preview": "Befriending: Mariama Keitana: Indifferent → Friendly; Shared notes.",
+        "playerHasApply": false
+      },
+      "degrees": [
+        {
+          "deg": "criticalSuccess",
+          "exp": "Helpful",
+          "preview": "Befriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).",
+          "applied": "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Mariama Keitana (Arcana)",
+            "traits": [
+              "downtime"
+            ],
+            "extraRollOptions": [
+              "thousands:befriend:82ns54fxcl:mariama-keitana",
+              "downtime"
+            ]
+          }
+        },
+        {
+          "deg": "success",
+          "exp": "Friendly",
+          "preview": "Befriending: Noxolo: Indifferent → Friendly.",
+          "applied": "Befriending: applied (Noxolo: Friendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Noxolo (Arcana)",
+            "traits": [
+              "downtime"
+            ],
+            "extraRollOptions": [
+              "thousands:befriend:uwom7ewgub:noxolo",
+              "downtime"
+            ]
+          }
+        },
+        {
+          "deg": "failure",
+          "exp": "Indifferent",
+          "preview": "Befriending: Chizire remains Indifferent.",
+          "applied": "Befriending: applied (Chizire: Indifferent).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Chizire (Arcana)",
+            "traits": [
+              "downtime"
+            ],
+            "extraRollOptions": [
+              "thousands:befriend:i9g0evff9s:chizire",
+              "downtime"
+            ]
+          }
+        },
+        {
+          "deg": "criticalFailure",
+          "exp": "Unfriendly",
+          "preview": "Befriending: Tzeniwe: Indifferent → Unfriendly.",
+          "applied": "Befriending: applied (Tzeniwe: Unfriendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Tzeniwe (Arcana)",
+            "traits": [
+              "downtime"
+            ],
+            "extraRollOptions": [
+              "thousands:befriend:t6qynpwqym:tzeniwe",
+              "downtime"
+            ]
+          }
+        }
+      ],
+      "degreeState": [
+        {
+          "name": "Nia",
+          "feats": [
+            "Classroom Advantage: Mariama Keitana"
+          ],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "helpful",
+              "notes": []
+            },
+            "noxolo": {
+              "attitude": "friendly",
+              "notes": []
+            },
+            "chizire": {
+              "attitude": "indifferent",
+              "notes": []
+            },
+            "tzeniwe": {
+              "attitude": "unfriendly",
+              "notes": []
+            }
+          }
+        },
+        {
+          "name": "Tarek",
+          "feats": []
+        }
+      ],
+      "reroll": {
+        "first": "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted).",
+        "firstState": {
+          "name": "Nia",
+          "feats": [
+            "Classroom Advantage: Mariama Keitana"
+          ],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "helpful",
+              "notes": []
+            }
+          }
+        },
+        "replacePreview": "Befriending: the result changed; Apply replaces the old one.",
+        "second": "Befriending: applied (Mariama Keitana: Indifferent).",
+        "secondState": {
+          "name": "Nia",
+          "feats": [],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "indifferent",
+              "notes": []
+            }
+          }
+        }
+      },
+      "direct": [
+        {
+          "label": "single grant",
+          "body": "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+          "preview": "Befriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).",
+          "applied": "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [
+                "Classroom Advantage: Mariama Keitana"
+              ],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "helpful",
+                  "notes": []
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": []
+            }
+          ]
+        },
+        {
+          "label": "single drop",
+          "body": "Nia updates standing with Mariama Keitana (-1 step).\n\nBefriending: Mariama Keitana: Helpful → Friendly; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+          "preview": "Befriending: Mariama Keitana: Helpful → Friendly; removes Classroom Advantage: Mariama Keitana.",
+          "applied": "Befriending: applied (Mariama Keitana: Friendly; Classroom Advantage removed).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": []
+            }
+          ]
+        },
+        {
+          "label": "party grant",
+          "body": "The party updates standing with Noxolo (+2 steps) — Found the chicken.\n\nBefriending: Nia: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken | Tarek: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken.\n\nApply",
+          "preview": "Befriending: Nia: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken | Tarek: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken.",
+          "applied": "Befriending: applied (Noxolo — Nia: Helpful, Tarek: Helpful).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [
+                "Classroom Advantage: Noxolo"
+              ],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                },
+                "noxolo": {
+                  "attitude": "helpful",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": [
+                "Classroom Advantage: Noxolo"
+              ],
+              "befriend": {
+                "noxolo": {
+                  "attitude": "helpful",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "label": "party drop",
+          "body": "The party updates standing with Noxolo (set to Indifferent).\n\nBefriending: Nia: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo.\n\nApply",
+          "preview": "Befriending: Nia: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo.",
+          "applied": "Befriending: applied (Noxolo — Nia: Indifferent, Tarek: Indifferent).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                },
+                "noxolo": {
+                  "attitude": "indifferent",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": [],
+              "befriend": {
+                "noxolo": {
+                  "attitude": "indifferent",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "sweep": {
+        "helpful": {
+          "messages": 36,
+          "granted": 18,
+          "removed": 18,
+          "leaks": [
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: Anchor Root: Indifferent → Helpful; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: applied (Anchor Root: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Helpful → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Anchor Root (set to Helpful).\n\nBefriending: Nia: Anchor Root: Hostile → Helpful; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone) | Tarek: Anchor Root: Indifferent → Helpful; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "The party updates standing with Anchor Root (set to Hostile).\n\nBefriending: Nia: Anchor Root: Helpful → Hostile; removes Classroom Advantage: Anchor Root | Tarek: Anchor Root: Helpful → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Chizire (set to Helpful).\n\nBefriending: Chizire: Indifferent → Helpful; grants Classroom Advantage: Chizire (unlocks Verminous Lure).\n\nApply",
+            "Nia updates standing with Chizire (set to Helpful).\n\nBefriending: applied (Chizire: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Chizire (set to Hostile).\n\nBefriending: Chizire: Helpful → Hostile; removes Classroom Advantage: Chizire.\n\nApply",
+            "Nia updates standing with Chizire (set to Hostile).\n\nBefriending: applied (Chizire: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Chizire (set to Helpful).\n\nBefriending: Nia: Chizire: Hostile → Helpful; grants Classroom Advantage: Chizire (unlocks Verminous Lure) | Tarek: Chizire: Indifferent → Helpful; grants Classroom Advantage: Chizire (unlocks Verminous Lure).\n\nApply",
+            "The party updates standing with Chizire (set to Hostile).\n\nBefriending: Nia: Chizire: Helpful → Hostile; removes Classroom Advantage: Chizire | Tarek: Chizire: Helpful → Hostile; removes Classroom Advantage: Chizire.\n\nApply",
+            "Nia updates standing with Esi Djana (set to Helpful).\n\nBefriending: Esi Djana: Indifferent → Helpful; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow).\n\nApply",
+            "Nia updates standing with Esi Djana (set to Helpful).\n\nBefriending: applied (Esi Djana: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Esi Djana (set to Hostile).\n\nBefriending: Esi Djana: Helpful → Hostile; removes Classroom Advantage: Esi Djana.\n\nApply",
+            "Nia updates standing with Esi Djana (set to Hostile).\n\nBefriending: applied (Esi Djana: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Esi Djana (set to Helpful).\n\nBefriending: Nia: Esi Djana: Hostile → Helpful; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow) | Tarek: Esi Djana: Indifferent → Helpful; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow).\n\nApply",
+            "The party updates standing with Esi Djana (set to Hostile).\n\nBefriending: Nia: Esi Djana: Helpful → Hostile; removes Classroom Advantage: Esi Djana | Tarek: Esi Djana: Helpful → Hostile; removes Classroom Advantage: Esi Djana.\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Helpful).\n\nBefriending: Haibram Thodja: Indifferent → Helpful; grants Classroom Advantage: Haibram Thodja (unlocks Airburst).\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Helpful).\n\nBefriending: applied (Haibram Thodja: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: Haibram Thodja: Helpful → Hostile; removes Classroom Advantage: Haibram Thodja.\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: applied (Haibram Thodja: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Haibram Thodja (set to Helpful).\n\nBefriending: Nia: Haibram Thodja: Hostile → Helpful; grants Classroom Advantage: Haibram Thodja (unlocks Airburst) | Tarek: Haibram Thodja: Indifferent → Helpful; grants Classroom Advantage: Haibram Thodja (unlocks Airburst).\n\nApply",
+            "The party updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: Nia: Haibram Thodja: Helpful → Hostile; removes Classroom Advantage: Haibram Thodja | Tarek: Haibram Thodja: Helpful → Hostile; removes Classroom Advantage: Haibram Thodja.\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Helpful).\n\nBefriending: Ignaci Canterells: Indifferent → Helpful; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink).\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Helpful).\n\nBefriending: applied (Ignaci Canterells: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: Ignaci Canterells: Helpful → Hostile; removes Classroom Advantage: Ignaci Canterells.\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: applied (Ignaci Canterells: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Ignaci Canterells (set to Helpful).\n\nBefriending: Nia: Ignaci Canterells: Hostile → Helpful; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink) | Tarek: Ignaci Canterells: Indifferent → Helpful; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink).\n\nApply",
+            "The party updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: Nia: Ignaci Canterells: Helpful → Hostile; removes Classroom Advantage: Ignaci Canterells | Tarek: Ignaci Canterells: Helpful → Hostile; removes Classroom Advantage: Ignaci Canterells.\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: Mariama Keitana: Helpful → Hostile; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: applied (Mariama Keitana: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Nia: Mariama Keitana: Hostile → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse) | Tarek: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+            "The party updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: Nia: Mariama Keitana: Helpful → Hostile; removes Classroom Advantage: Mariama Keitana | Tarek: Mariama Keitana: Helpful → Hostile; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+            "Nia updates standing with Noxolo (set to Helpful).\n\nBefriending: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions).\n\nApply",
+            "Nia updates standing with Noxolo (set to Helpful).\n\nBefriending: applied (Noxolo: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Noxolo (set to Hostile).\n\nBefriending: Noxolo: Helpful → Hostile; removes Classroom Advantage: Noxolo.\n\nApply",
+            "Nia updates standing with Noxolo (set to Hostile).\n\nBefriending: applied (Noxolo: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Noxolo (set to Helpful).\n\nBefriending: Nia: Noxolo: Hostile → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions) | Tarek: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions).\n\nApply",
+            "The party updates standing with Noxolo (set to Hostile).\n\nBefriending: Nia: Noxolo: Helpful → Hostile; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Helpful → Hostile; removes Classroom Advantage: Noxolo.\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Helpful).\n\nBefriending: Okoro Obiyo: Indifferent → Helpful; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games).\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Helpful).\n\nBefriending: applied (Okoro Obiyo: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: Okoro Obiyo: Helpful → Hostile; removes Classroom Advantage: Okoro Obiyo.\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: applied (Okoro Obiyo: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Okoro Obiyo (set to Helpful).\n\nBefriending: Nia: Okoro Obiyo: Hostile → Helpful; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games) | Tarek: Okoro Obiyo: Indifferent → Helpful; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games).\n\nApply",
+            "The party updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: Nia: Okoro Obiyo: Helpful → Hostile; removes Classroom Advantage: Okoro Obiyo | Tarek: Okoro Obiyo: Helpful → Hostile; removes Classroom Advantage: Okoro Obiyo.\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Helpful).\n\nBefriending: Tzeniwe: Indifferent → Helpful; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch).\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Helpful).\n\nBefriending: applied (Tzeniwe: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Tzeniwe (set to Hostile).\n\nBefriending: Tzeniwe: Helpful → Hostile; removes Classroom Advantage: Tzeniwe.\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Hostile).\n\nBefriending: applied (Tzeniwe: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Tzeniwe (set to Helpful).\n\nBefriending: Nia: Tzeniwe: Hostile → Helpful; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch) | Tarek: Tzeniwe: Indifferent → Helpful; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch).\n\nApply",
+            "The party updates standing with Tzeniwe (set to Hostile).\n\nBefriending: Nia: Tzeniwe: Helpful → Hostile; removes Classroom Advantage: Tzeniwe | Tarek: Tzeniwe: Helpful → Hostile; removes Classroom Advantage: Tzeniwe.\n\nApply"
+          ],
+          "sample": [
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: Anchor Root: Indifferent → Helpful; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: applied (Anchor Root: Helpful; Classroom Advantage granted).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Helpful → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; Classroom Advantage removed)."
+          ]
+        },
+        "friendly": {
+          "messages": 36,
+          "granted": 18,
+          "removed": 18,
+          "leaks": [
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: Anchor Root: Indifferent → Friendly; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: applied (Anchor Root: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Friendly → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Anchor Root (set to Friendly).\n\nBefriending: Nia: Anchor Root: Hostile → Friendly; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone) | Tarek: Anchor Root: Indifferent → Friendly; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "The party updates standing with Anchor Root (set to Hostile).\n\nBefriending: Nia: Anchor Root: Friendly → Hostile; removes Classroom Advantage: Anchor Root | Tarek: Anchor Root: Friendly → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Chizire (set to Friendly).\n\nBefriending: Chizire: Indifferent → Friendly; grants Classroom Advantage: Chizire (unlocks Verminous Lure).\n\nApply",
+            "Nia updates standing with Chizire (set to Friendly).\n\nBefriending: applied (Chizire: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Chizire (set to Hostile).\n\nBefriending: Chizire: Friendly → Hostile; removes Classroom Advantage: Chizire.\n\nApply",
+            "Nia updates standing with Chizire (set to Hostile).\n\nBefriending: applied (Chizire: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Chizire (set to Friendly).\n\nBefriending: Nia: Chizire: Hostile → Friendly; grants Classroom Advantage: Chizire (unlocks Verminous Lure) | Tarek: Chizire: Indifferent → Friendly; grants Classroom Advantage: Chizire (unlocks Verminous Lure).\n\nApply",
+            "The party updates standing with Chizire (set to Hostile).\n\nBefriending: Nia: Chizire: Friendly → Hostile; removes Classroom Advantage: Chizire | Tarek: Chizire: Friendly → Hostile; removes Classroom Advantage: Chizire.\n\nApply",
+            "Nia updates standing with Esi Djana (set to Friendly).\n\nBefriending: Esi Djana: Indifferent → Friendly; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow).\n\nApply",
+            "Nia updates standing with Esi Djana (set to Friendly).\n\nBefriending: applied (Esi Djana: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Esi Djana (set to Hostile).\n\nBefriending: Esi Djana: Friendly → Hostile; removes Classroom Advantage: Esi Djana.\n\nApply",
+            "Nia updates standing with Esi Djana (set to Hostile).\n\nBefriending: applied (Esi Djana: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Esi Djana (set to Friendly).\n\nBefriending: Nia: Esi Djana: Hostile → Friendly; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow) | Tarek: Esi Djana: Indifferent → Friendly; grants Classroom Advantage: Esi Djana (unlocks Impeccable Flow).\n\nApply",
+            "The party updates standing with Esi Djana (set to Hostile).\n\nBefriending: Nia: Esi Djana: Friendly → Hostile; removes Classroom Advantage: Esi Djana | Tarek: Esi Djana: Friendly → Hostile; removes Classroom Advantage: Esi Djana.\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Friendly).\n\nBefriending: Haibram Thodja: Indifferent → Friendly; grants Classroom Advantage: Haibram Thodja (unlocks Airburst).\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Friendly).\n\nBefriending: applied (Haibram Thodja: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: Haibram Thodja: Friendly → Hostile; removes Classroom Advantage: Haibram Thodja.\n\nApply",
+            "Nia updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: applied (Haibram Thodja: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Haibram Thodja (set to Friendly).\n\nBefriending: Nia: Haibram Thodja: Hostile → Friendly; grants Classroom Advantage: Haibram Thodja (unlocks Airburst) | Tarek: Haibram Thodja: Indifferent → Friendly; grants Classroom Advantage: Haibram Thodja (unlocks Airburst).\n\nApply",
+            "The party updates standing with Haibram Thodja (set to Hostile).\n\nBefriending: Nia: Haibram Thodja: Friendly → Hostile; removes Classroom Advantage: Haibram Thodja | Tarek: Haibram Thodja: Friendly → Hostile; removes Classroom Advantage: Haibram Thodja.\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Friendly).\n\nBefriending: Ignaci Canterells: Indifferent → Friendly; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink).\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Friendly).\n\nBefriending: applied (Ignaci Canterells: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: Ignaci Canterells: Friendly → Hostile; removes Classroom Advantage: Ignaci Canterells.\n\nApply",
+            "Nia updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: applied (Ignaci Canterells: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Ignaci Canterells (set to Friendly).\n\nBefriending: Nia: Ignaci Canterells: Hostile → Friendly; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink) | Tarek: Ignaci Canterells: Indifferent → Friendly; grants Classroom Advantage: Ignaci Canterells (unlocks Forgetful Ink).\n\nApply",
+            "The party updates standing with Ignaci Canterells (set to Hostile).\n\nBefriending: Nia: Ignaci Canterells: Friendly → Hostile; removes Classroom Advantage: Ignaci Canterells | Tarek: Ignaci Canterells: Friendly → Hostile; removes Classroom Advantage: Ignaci Canterells.\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Friendly).\n\nBefriending: Mariama Keitana: Indifferent → Friendly; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Friendly).\n\nBefriending: applied (Mariama Keitana: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: Mariama Keitana: Friendly → Hostile; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+            "Nia updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: applied (Mariama Keitana: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Mariama Keitana (set to Friendly).\n\nBefriending: Nia: Mariama Keitana: Hostile → Friendly; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse) | Tarek: Mariama Keitana: Indifferent → Friendly; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+            "The party updates standing with Mariama Keitana (set to Hostile).\n\nBefriending: Nia: Mariama Keitana: Friendly → Hostile; removes Classroom Advantage: Mariama Keitana | Tarek: Mariama Keitana: Friendly → Hostile; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+            "Nia updates standing with Noxolo (set to Friendly).\n\nBefriending: Noxolo: Indifferent → Friendly; grants Classroom Advantage: Noxolo (unlocks Grave Impressions).\n\nApply",
+            "Nia updates standing with Noxolo (set to Friendly).\n\nBefriending: applied (Noxolo: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Noxolo (set to Hostile).\n\nBefriending: Noxolo: Friendly → Hostile; removes Classroom Advantage: Noxolo.\n\nApply",
+            "Nia updates standing with Noxolo (set to Hostile).\n\nBefriending: applied (Noxolo: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Noxolo (set to Friendly).\n\nBefriending: Nia: Noxolo: Hostile → Friendly; grants Classroom Advantage: Noxolo (unlocks Grave Impressions) | Tarek: Noxolo: Indifferent → Friendly; grants Classroom Advantage: Noxolo (unlocks Grave Impressions).\n\nApply",
+            "The party updates standing with Noxolo (set to Hostile).\n\nBefriending: Nia: Noxolo: Friendly → Hostile; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Friendly → Hostile; removes Classroom Advantage: Noxolo.\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Friendly).\n\nBefriending: Okoro Obiyo: Indifferent → Friendly; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games).\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Friendly).\n\nBefriending: applied (Okoro Obiyo: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: Okoro Obiyo: Friendly → Hostile; removes Classroom Advantage: Okoro Obiyo.\n\nApply",
+            "Nia updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: applied (Okoro Obiyo: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Okoro Obiyo (set to Friendly).\n\nBefriending: Nia: Okoro Obiyo: Hostile → Friendly; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games) | Tarek: Okoro Obiyo: Indifferent → Friendly; grants Classroom Advantage: Okoro Obiyo (unlocks Mind Games).\n\nApply",
+            "The party updates standing with Okoro Obiyo (set to Hostile).\n\nBefriending: Nia: Okoro Obiyo: Friendly → Hostile; removes Classroom Advantage: Okoro Obiyo | Tarek: Okoro Obiyo: Friendly → Hostile; removes Classroom Advantage: Okoro Obiyo.\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Friendly).\n\nBefriending: Tzeniwe: Indifferent → Friendly; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch).\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Friendly).\n\nBefriending: applied (Tzeniwe: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Tzeniwe (set to Hostile).\n\nBefriending: Tzeniwe: Friendly → Hostile; removes Classroom Advantage: Tzeniwe.\n\nApply",
+            "Nia updates standing with Tzeniwe (set to Hostile).\n\nBefriending: applied (Tzeniwe: Hostile; Classroom Advantage removed).",
+            "The party updates standing with Tzeniwe (set to Friendly).\n\nBefriending: Nia: Tzeniwe: Hostile → Friendly; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch) | Tarek: Tzeniwe: Indifferent → Friendly; grants Classroom Advantage: Tzeniwe (unlocks Friendfetch).\n\nApply",
+            "The party updates standing with Tzeniwe (set to Hostile).\n\nBefriending: Nia: Tzeniwe: Friendly → Hostile; removes Classroom Advantage: Tzeniwe | Tarek: Tzeniwe: Friendly → Hostile; removes Classroom Advantage: Tzeniwe.\n\nApply"
+          ],
+          "sample": [
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: Anchor Root: Indifferent → Friendly; grants Classroom Advantage: Anchor Root (unlocks Rhythm Bone).\n\nApply",
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: applied (Anchor Root: Friendly; Classroom Advantage granted).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Friendly → Hostile; removes Classroom Advantage: Anchor Root.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; Classroom Advantage removed)."
+          ]
+        }
+      }
+    },
+    "head": {
+      "playerRoll": {
+        "args": {
+          "dc": 18,
+          "label": "Befriend: Mariama Keitana (Diplomacy)",
+          "traits": [],
+          "extraRollOptions": [
+            "thousands:befriend:bghlj6kiu1:mariama-keitana",
+            "thousands:befriend-note:Shared%20notes"
+          ]
+        },
+        "tags": [],
+        "options": [
+          "thousands:befriend:bghlj6kiu1:mariama-keitana",
+          "thousands:befriend-note:Shared%20notes"
+        ],
+        "preview": "Befriending: Mariama Keitana: Indifferent → Friendly; Shared notes.",
+        "playerHasApply": false
+      },
+      "degrees": [
+        {
+          "deg": "criticalSuccess",
+          "exp": "Helpful",
+          "preview": "Befriending: Mariama Keitana: Indifferent → Helpful; now befriended.",
+          "applied": "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Mariama Keitana (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:xa9ujdvk9z:mariama-keitana"
+            ]
+          }
+        },
+        {
+          "deg": "success",
+          "exp": "Friendly",
+          "preview": "Befriending: Noxolo: Indifferent → Friendly.",
+          "applied": "Befriending: applied (Noxolo: Friendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Noxolo (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:07cp5kxebk:noxolo"
+            ]
+          }
+        },
+        {
+          "deg": "failure",
+          "exp": "Indifferent",
+          "preview": "Befriending: Chizire remains Indifferent.",
+          "applied": "Befriending: applied (Chizire: Indifferent).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Chizire (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:4srotawxw0:chizire"
+            ]
+          }
+        },
+        {
+          "deg": "criticalFailure",
+          "exp": "Unfriendly",
+          "preview": "Befriending: Tzeniwe: Indifferent → Unfriendly.",
+          "applied": "Befriending: applied (Tzeniwe: Unfriendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Tzeniwe (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:csxc4gcdk7:tzeniwe"
+            ]
+          }
+        }
+      ],
+      "degreeState": [
+        {
+          "name": "Nia",
+          "feats": [
+            "Classroom Advantage: Mariama Keitana"
+          ],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "helpful",
+              "notes": []
+            },
+            "noxolo": {
+              "attitude": "friendly",
+              "notes": []
+            },
+            "chizire": {
+              "attitude": "indifferent",
+              "notes": []
+            },
+            "tzeniwe": {
+              "attitude": "unfriendly",
+              "notes": []
+            }
+          }
+        },
+        {
+          "name": "Tarek",
+          "feats": []
+        }
+      ],
+      "reroll": {
+        "first": "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+        "firstState": {
+          "name": "Nia",
+          "feats": [
+            "Classroom Advantage: Mariama Keitana"
+          ],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "helpful",
+              "notes": []
+            }
+          }
+        },
+        "replacePreview": "Befriending: the result changed; Apply replaces the old one.",
+        "second": "Befriending: applied (Mariama Keitana: Indifferent).",
+        "secondState": {
+          "name": "Nia",
+          "feats": [],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "indifferent",
+              "notes": []
+            }
+          }
+        }
+      },
+      "direct": [
+        {
+          "label": "single grant",
+          "body": "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Mariama Keitana: Indifferent → Helpful; now befriended.\n\nApply",
+          "preview": "Befriending: Mariama Keitana: Indifferent → Helpful; now befriended.",
+          "applied": "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [
+                "Classroom Advantage: Mariama Keitana"
+              ],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "helpful",
+                  "notes": []
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": []
+            }
+          ]
+        },
+        {
+          "label": "single drop",
+          "body": "Nia updates standing with Mariama Keitana (-1 step).\n\nBefriending: Mariama Keitana: Helpful → Friendly; no longer befriended.\n\nApply",
+          "preview": "Befriending: Mariama Keitana: Helpful → Friendly; no longer befriended.",
+          "applied": "Befriending: applied (Mariama Keitana: Friendly; no longer befriended).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": []
+            }
+          ]
+        },
+        {
+          "label": "party grant",
+          "body": "The party updates standing with Noxolo (+2 steps) — Found the chicken.\n\nBefriending: Nia: Noxolo: Indifferent → Helpful; now befriended; Found the chicken | Tarek: Noxolo: Indifferent → Helpful; now befriended; Found the chicken.\n\nApply",
+          "preview": "Befriending: Nia: Noxolo: Indifferent → Helpful; now befriended; Found the chicken | Tarek: Noxolo: Indifferent → Helpful; now befriended; Found the chicken.",
+          "applied": "Befriending: applied (Noxolo — Nia: Helpful, Tarek: Helpful).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [
+                "Classroom Advantage: Noxolo"
+              ],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                },
+                "noxolo": {
+                  "attitude": "helpful",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": [
+                "Classroom Advantage: Noxolo"
+              ],
+              "befriend": {
+                "noxolo": {
+                  "attitude": "helpful",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "label": "party drop",
+          "body": "The party updates standing with Noxolo (set to Indifferent).\n\nBefriending: Nia: Noxolo: Helpful → Indifferent; no longer befriended | Tarek: Noxolo: Helpful → Indifferent; no longer befriended.\n\nApply",
+          "preview": "Befriending: Nia: Noxolo: Helpful → Indifferent; no longer befriended | Tarek: Noxolo: Helpful → Indifferent; no longer befriended.",
+          "applied": "Befriending: applied (Noxolo — Nia: Indifferent, Tarek: Indifferent).",
+          "state": [
+            {
+              "name": "Nia",
+              "feats": [],
+              "befriend": {
+                "mariama-keitana": {
+                  "attitude": "friendly",
+                  "notes": []
+                },
+                "noxolo": {
+                  "attitude": "indifferent",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Tarek",
+              "feats": [],
+              "befriend": {
+                "noxolo": {
+                  "attitude": "indifferent",
+                  "notes": [
+                    "Found the chicken"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "sweep": {
+        "helpful": {
+          "messages": 36,
+          "granted": 18,
+          "removed": 18,
+          "leaks": [],
+          "sample": [
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: Anchor Root: Indifferent → Helpful; now befriended.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: applied (Anchor Root: Helpful; now befriended).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Helpful → Hostile; no longer befriended.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; no longer befriended)."
+          ]
+        },
+        "friendly": {
+          "messages": 36,
+          "granted": 18,
+          "removed": 18,
+          "leaks": [],
+          "sample": [
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: Anchor Root: Indifferent → Friendly; now befriended.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: applied (Anchor Root: Friendly; now befriended).",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Friendly → Hostile; no longer befriended.\n\nApply",
+            "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; no longer befriended)."
+          ]
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "s": "roll",
+      "name": "player roll args have no downtime",
+      "ok": true,
+      "detail": {
+        "dc": 18,
+        "label": "Befriend: Mariama Keitana (Diplomacy)",
+        "traits": [],
+        "extraRollOptions": [
+          "thousands:befriend:bghlj6kiu1:mariama-keitana",
+          "thousands:befriend-note:Shared%20notes"
+        ]
+      }
+    },
+    {
+      "s": "roll",
+      "name": "card tags/options no downtime",
+      "ok": true
+    },
+    {
+      "s": "roll",
+      "name": "gm rolls no downtime",
+      "ok": true
+    },
+    {
+      "s": "apply",
+      "name": "degrees apply",
+      "ok": true,
+      "detail": [
+        {
+          "deg": "criticalSuccess",
+          "exp": "Helpful",
+          "preview": "Befriending: Mariama Keitana: Indifferent → Helpful; now befriended.",
+          "applied": "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Mariama Keitana (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:xa9ujdvk9z:mariama-keitana"
+            ]
+          }
+        },
+        {
+          "deg": "success",
+          "exp": "Friendly",
+          "preview": "Befriending: Noxolo: Indifferent → Friendly.",
+          "applied": "Befriending: applied (Noxolo: Friendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Noxolo (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:07cp5kxebk:noxolo"
+            ]
+          }
+        },
+        {
+          "deg": "failure",
+          "exp": "Indifferent",
+          "preview": "Befriending: Chizire remains Indifferent.",
+          "applied": "Befriending: applied (Chizire: Indifferent).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Chizire (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:4srotawxw0:chizire"
+            ]
+          }
+        },
+        {
+          "deg": "criticalFailure",
+          "exp": "Unfriendly",
+          "preview": "Befriending: Tzeniwe: Indifferent → Unfriendly.",
+          "applied": "Befriending: applied (Tzeniwe: Unfriendly).",
+          "args": {
+            "dc": 15,
+            "label": "Befriend: Tzeniwe (Arcana)",
+            "traits": [],
+            "extraRollOptions": [
+              "thousands:befriend:csxc4gcdk7:tzeniwe"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "s": "chat",
+      "name": "degree texts clean",
+      "ok": true
+    },
+    {
+      "s": "reroll",
+      "name": "replace removes feat",
+      "ok": true,
+      "detail": {
+        "first": "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+        "firstState": {
+          "name": "Nia",
+          "feats": [
+            "Classroom Advantage: Mariama Keitana"
+          ],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "helpful",
+              "notes": []
+            }
+          }
+        },
+        "replacePreview": "Befriending: the result changed; Apply replaces the old one.",
+        "second": "Befriending: applied (Mariama Keitana: Indifferent).",
+        "secondState": {
+          "name": "Nia",
+          "feats": [],
+          "befriend": {
+            "mariama-keitana": {
+              "attitude": "indifferent",
+              "notes": []
+            }
+          }
+        }
+      }
+    },
+    {
+      "s": "direct",
+      "name": "direct texts clean",
+      "ok": true
+    },
+    {
+      "s": "direct",
+      "name": "single grant",
+      "ok": true
+    },
+    {
+      "s": "direct",
+      "name": "single drop",
+      "ok": true
+    },
+    {
+      "s": "direct",
+      "name": "party feats",
+      "ok": true
+    },
+    {
+      "s": "sweep",
+      "name": "helpful",
+      "ok": true,
+      "detail": {
+        "messages": 36,
+        "granted": 18,
+        "removed": 18,
+        "leaks": 0,
+        "sample": [
+          "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: Anchor Root: Indifferent → Helpful; now befriended.\n\nApply",
+          "Nia updates standing with Anchor Root (set to Helpful).\n\nBefriending: applied (Anchor Root: Helpful; now befriended).",
+          "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Helpful → Hostile; no longer befriended.\n\nApply",
+          "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; no longer befriended)."
+        ]
+      }
+    },
+    {
+      "s": "sweep",
+      "name": "friendly",
+      "ok": true,
+      "detail": {
+        "messages": 36,
+        "granted": 18,
+        "removed": 18,
+        "leaks": 0,
+        "sample": [
+          "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: Anchor Root: Indifferent → Friendly; now befriended.\n\nApply",
+          "Nia updates standing with Anchor Root (set to Friendly).\n\nBefriending: applied (Anchor Root: Friendly; now befriended).",
+          "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: Anchor Root: Friendly → Hostile; no longer befriended.\n\nApply",
+          "Nia updates standing with Anchor Root (set to Hostile).\n\nBefriending: applied (Anchor Root: Hostile; no longer befriended)."
+        ]
+      }
+    },
+    {
+      "s": "control",
+      "name": "base shows old behaviour",
+      "ok": true
+    },
+    {
+      "s": "errors",
+      "name": "no page errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "pageErrors": []
+}

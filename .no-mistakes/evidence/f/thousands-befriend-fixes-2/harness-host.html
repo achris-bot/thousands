@@ -1,0 +1,70 @@
+<!doctype html><meta charset="utf-8"><title>Local Foundry stand-in</title>
+<style>
+body{font:14px sans-serif;margin:16px;background:#1d1b19;color:#222;width:620px}
+h1{color:#eee;font-size:14px}
+.chat-message{background:#eee9dc;border-radius:5px;padding:8px 10px;margin:8px 0;list-style:none}
+.tags span{display:inline-block;background:#5e0000;color:#fff;font-size:11px;padding:1px 6px;margin:2px 3px 2px 0;border-radius:2px;text-transform:uppercase}
+.opts{font:11px monospace;color:#555;word-break:break-all}
+ol{padding:0}
+dialog{width:520px} dialog label{display:block;margin:4px 0} table{border-collapse:collapse;font-size:12px} td,th{border:1px solid #aaa;padding:1px 5px}
+</style>
+<h1 id="banner"></h1><ol id="chat-log"></ol>
+<script type="module">
+const q = new URLSearchParams(location.search);
+document.getElementById('banner').textContent = 'Local Foundry/PF2e stand-in (not real Foundry) — module build: ' + q.get('build');
+const hooks = {}, settings = {}, overrides = {};
+window.H = { rolls: [], warnings: [], messages: [], nextOutcome: 'success', overrides };
+window.Hooks = { on:(h,f)=>(hooks[h]??=[]).push(f), once:(h,f)=>(hooks[h]??=[]).push(f) };
+const call=(h,...a)=>(hooks[h]??[]).map(f=>f(...a));
+const esc = s => String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
+const render = m => {
+  let li = document.getElementById(m.id);
+  if (!li) { li=document.createElement('li'); li.id=m.id; li.className='chat-message'; document.getElementById('chat-log').append(li); }
+  li.innerHTML = `<header><strong>${esc(m.speaker.alias)}</strong></header><div class="message-content">${m.content}</div>`;
+  call('renderChatMessageHTML', m, li);
+};
+const post = async d => {
+  const m = { id:'m'+H.messages.length, content:d.content, flags:d.flags??{}, speaker:d.speaker, actor:d.actor ?? H.actors.find(a=>a.id===d.speaker.actor),
+    async update(u){ for (const [k,v] of Object.entries(u)) { const p=k.split('.'); let o=this; while(p.length>1){o=(o[p[0]]??={}); p.shift();} o[p[0]]=v; } render(this); } };
+  H.messages.push(m); render(m); return m;
+};
+const makeActor = (id,name) => {
+  const flags = {};
+  const a = { id, name, type:'character', level:3, items:[],
+    getFlag:(s,k)=>flags[s+k] && structuredClone(flags[s+k]),
+    async setFlag(s,k,v){ flags[s+k]=structuredClone(v); },
+    async createEmbeddedDocuments(_t,docs){ for(const d of docs) this.items.push({...d,id:crypto.randomUUID()}); },
+    async deleteEmbeddedDocuments(_t,ids){ this.items=this.items.filter(i=>!ids.includes(i.id)); },
+  };
+  // Emulates the PF2e Statistic#roll boundary: card tags = traits, context options = extra options + traits.
+  a.skills = Object.fromEntries([['diplomacy','Diplomacy'],['arcana','Arcana']].map(([slug,label])=>[slug,{slug,label,
+    async roll(args){
+      H.rolls.push(structuredClone(args));
+      const options=[...(args.extraRollOptions??[]), ...(args.traits??[])];
+      await post({ speaker:{alias:name}, actor:a,
+        content:`<p><strong>${esc(args.label)}</strong> — DC ${args.dc}</p><div class="tags">${(args.traits??[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div><p>Outcome: ${H.nextOutcome}</p><div class="opts">roll options: ${esc(options.join(', '))}</div>`,
+        flags:{pf2e:{context:{options, outcome:H.nextOutcome}}} });
+    }}]));
+  return a;
+};
+const actors=[makeActor('nia','Nia'), makeActor('tarek','Tarek')];
+H.actors=actors;
+const modules=new Map([['thousands',{}]]);
+window.game={ user:{isGM:q.get('gm')!=='0', character:q.get('gm')!=='0'?null:actors[0]}, actors,
+  settings:{register:(s,k,c)=>settings[k]=c, get:(s,k)=>k in overrides?overrides[k]:settings[k]?.default},
+  modules, };
+window.ui={notifications:{warn:t=>H.warnings.push(t)}};
+window.canvas={tokens:{controlled:[]}};
+window.ChatMessage={ create:post, getSpeaker:o=>({alias:o?.alias ?? o?.actor?.name, actor:o?.actor?.id}) };
+const CHAT_COMMANDS={};
+window.foundry={utils:{randomID:()=>Math.random().toString(36).slice(2,12), escapeHTML:esc},
+  applications:{sidebar:{tabs:{ChatLog:{CHAT_COMMANDS}}}, api:{DialogV2:{wait:cfg=>new Promise(res=>{
+    const d=document.createElement('dialog'); d.innerHTML=`<form method="dialog"><h3>${esc(cfg.window.title)}</h3>${cfg.content}<div>${cfg.buttons.map(b=>`<button type="button" data-action="${b.action}">${b.label}</button>`).join('')}</div></form>`;
+    document.body.append(d);
+    for(const b of cfg.buttons) d.querySelector(`[data-action="${b.action}"]`).onclick=ev=>{const r=b.callback?b.callback(ev,ev.target):b.action; d.remove(); res(r);};
+    cfg.render?.(null,{element:d}); d.showModal(); })}}}};
+await import(`/${q.get('build')}/module.js`);
+call('init');
+H.command = t => { for (const c of Object.values(CHAT_COMMANDS)) if (c.rgx.test(t)) { c.fn(); return true; } return false; };
+H.ready=true;
+</script>

@@ -1,0 +1,197 @@
+PASS roll player roll args have no downtime
+PASS roll card tags/options no downtime
+PASS roll gm rolls no downtime
+PASS apply degrees apply
+PASS chat degree texts clean
+PASS reroll replace removes feat
+PASS direct direct texts clean
+PASS direct single grant
+PASS direct single drop
+PASS direct party feats
+PASS sweep helpful
+PASS sweep friendly
+PASS control base shows old behaviour
+PASS errors no page errors
+
+== base {
+ "roll": {
+  "args": {
+   "dc": 18,
+   "label": "Befriend: Mariama Keitana (Diplomacy)",
+   "traits": [
+    "downtime"
+   ],
+   "extraRollOptions": [
+    "thousands:befriend:r6hzts73d6:mariama-keitana",
+    "thousands:befriend-note:Shared%20notes",
+    "downtime"
+   ]
+  },
+  "tags": [
+   "downtime"
+  ],
+  "options": [
+   "thousands:befriend:r6hzts73d6:mariama-keitana",
+   "thousands:befriend-note:Shared%20notes",
+   "downtime",
+   "downtime"
+  ],
+  "preview": "Befriending: Mariama Keitana: Indifferent → Friendly; Shared notes.",
+  "playerHasApply": false
+ },
+ "reroll": [
+  "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted).",
+  "Befriending: the result changed; Apply replaces the old one.",
+  "Befriending: applied (Mariama Keitana: Indifferent)."
+ ],
+ "degrees": [
+  [
+   "criticalSuccess",
+   "Befriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).",
+   "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted)."
+  ],
+  [
+   "success",
+   "Befriending: Noxolo: Indifferent → Friendly.",
+   "Befriending: applied (Noxolo: Friendly)."
+  ],
+  [
+   "failure",
+   "Befriending: Chizire remains Indifferent.",
+   "Befriending: applied (Chizire: Indifferent)."
+  ],
+  [
+   "criticalFailure",
+   "Befriending: Tzeniwe: Indifferent → Unfriendly.",
+   "Befriending: applied (Tzeniwe: Unfriendly)."
+  ]
+ ],
+ "direct": [
+  [
+   "single grant",
+   "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).\n\nApply",
+   "Befriending: Mariama Keitana: Indifferent → Helpful; grants Classroom Advantage: Mariama Keitana (unlocks Lesson of Calamity and Stumbling Curse).",
+   "Befriending: applied (Mariama Keitana: Helpful; Classroom Advantage granted)."
+  ],
+  [
+   "single drop",
+   "Nia updates standing with Mariama Keitana (-1 step).\n\nBefriending: Mariama Keitana: Helpful → Friendly; removes Classroom Advantage: Mariama Keitana.\n\nApply",
+   "Befriending: Mariama Keitana: Helpful → Friendly; removes Classroom Advantage: Mariama Keitana.",
+   "Befriending: applied (Mariama Keitana: Friendly; Classroom Advantage removed)."
+  ],
+  [
+   "party grant",
+   "The party updates standing with Noxolo (+2 steps) — Found the chicken.\n\nBefriending: Nia: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken | Tarek: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken.\n\nApply",
+   "Befriending: Nia: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken | Tarek: Noxolo: Indifferent → Helpful; grants Classroom Advantage: Noxolo (unlocks Grave Impressions); Found the chicken.",
+   "Befriending: applied (Noxolo — Nia: Helpful, Tarek: Helpful)."
+  ],
+  [
+   "party drop",
+   "The party updates standing with Noxolo (set to Indifferent).\n\nBefriending: Nia: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo.\n\nApply",
+   "Befriending: Nia: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo | Tarek: Noxolo: Helpful → Indifferent; removes Classroom Advantage: Noxolo.",
+   "Befriending: applied (Noxolo — Nia: Indifferent, Tarek: Indifferent)."
+  ]
+ ],
+ "sweep": {
+  "helpful": [
+   36,
+   18,
+   18,
+   54
+  ],
+  "friendly": [
+   36,
+   18,
+   18,
+   54
+  ]
+ }
+}
+
+== head {
+ "roll": {
+  "args": {
+   "dc": 18,
+   "label": "Befriend: Mariama Keitana (Diplomacy)",
+   "traits": [],
+   "extraRollOptions": [
+    "thousands:befriend:bghlj6kiu1:mariama-keitana",
+    "thousands:befriend-note:Shared%20notes"
+   ]
+  },
+  "tags": [],
+  "options": [
+   "thousands:befriend:bghlj6kiu1:mariama-keitana",
+   "thousands:befriend-note:Shared%20notes"
+  ],
+  "preview": "Befriending: Mariama Keitana: Indifferent → Friendly; Shared notes.",
+  "playerHasApply": false
+ },
+ "reroll": [
+  "Befriending: applied (Mariama Keitana: Helpful; now befriended).",
+  "Befriending: the result changed; Apply replaces the old one.",
+  "Befriending: applied (Mariama Keitana: Indifferent)."
+ ],
+ "degrees": [
+  [
+   "criticalSuccess",
+   "Befriending: Mariama Keitana: Indifferent → Helpful; now befriended.",
+   "Befriending: applied (Mariama Keitana: Helpful; now befriended)."
+  ],
+  [
+   "success",
+   "Befriending: Noxolo: Indifferent → Friendly.",
+   "Befriending: applied (Noxolo: Friendly)."
+  ],
+  [
+   "failure",
+   "Befriending: Chizire remains Indifferent.",
+   "Befriending: applied (Chizire: Indifferent)."
+  ],
+  [
+   "criticalFailure",
+   "Befriending: Tzeniwe: Indifferent → Unfriendly.",
+   "Befriending: applied (Tzeniwe: Unfriendly)."
+  ]
+ ],
+ "direct": [
+  [
+   "single grant",
+   "Nia updates standing with Mariama Keitana (set to Helpful).\n\nBefriending: Mariama Keitana: Indifferent → Helpful; now befriended.\n\nApply",
+   "Befriending: Mariama Keitana: Indifferent → Helpful; now befriended.",
+   "Befriending: applied (Mariama Keitana: Helpful; now befriended)."
+  ],
+  [
+   "single drop",
+   "Nia updates standing with Mariama Keitana (-1 step).\n\nBefriending: Mariama Keitana: Helpful → Friendly; no longer befriended.\n\nApply",
+   "Befriending: Mariama Keitana: Helpful → Friendly; no longer befriended.",
+   "Befriending: applied (Mariama Keitana: Friendly; no longer befriended)."
+  ],
+  [
+   "party grant",
+   "The party updates standing with Noxolo (+2 steps) — Found the chicken.\n\nBefriending: Nia: Noxolo: Indifferent → Helpful; now befriended; Found the chicken | Tarek: Noxolo: Indifferent → Helpful; now befriended; Found the chicken.\n\nApply",
+   "Befriending: Nia: Noxolo: Indifferent → Helpful; now befriended; Found the chicken | Tarek: Noxolo: Indifferent → Helpful; now befriended; Found the chicken.",
+   "Befriending: applied (Noxolo — Nia: Helpful, Tarek: Helpful)."
+  ],
+  [
+   "party drop",
+   "The party updates standing with Noxolo (set to Indifferent).\n\nBefriending: Nia: Noxolo: Helpful → Indifferent; no longer befriended | Tarek: Noxolo: Helpful → Indifferent; no longer befriended.\n\nApply",
+   "Befriending: Nia: Noxolo: Helpful → Indifferent; no longer befriended | Tarek: Noxolo: Helpful → Indifferent; no longer befriended.",
+   "Befriending: applied (Noxolo — Nia: Indifferent, Tarek: Indifferent)."
+  ]
+ ],
+ "sweep": {
+  "helpful": [
+   36,
+   18,
+   18,
+   0
+  ],
+  "friendly": [
+   36,
+   18,
+   18,
+   0
+  ]
+ }
+}
