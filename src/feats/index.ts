@@ -60,6 +60,20 @@ export const PF2E_UNLOCK_UUIDS = {
   "friendfetch": { uuid: `${SP}TjrZGl8z2INgf3vi`, label: "Friendfetch" },
 } as const;
 
+/** Book 1 p. 11: each symbol grants one innate cantrip (Light replaces dancing lights, Telekinetic Hand replaces mage hand). */
+// prettier-ignore
+export const ORIENTATION_SYMBOLS = {
+  "flickering-candle": { label: "Flickering Candle", cantrip: "Light", tradition: "primal" },
+  "balanced-scales": { label: "Balanced Scales", cantrip: "Guidance", tradition: "primal" },
+  "multipronged-key": { label: "Multipronged Key", cantrip: "Telekinetic Hand", tradition: "arcane" },
+  "pursed-lips": { label: "Pursed Lips", cantrip: "Message", tradition: "arcane" },
+  "open-hand-with-an-eye": { label: "Open Hand with an Eye in the Palm", cantrip: "Shield", tradition: "arcane" },
+  "running-hourglass": { label: "Running Hourglass", cantrip: "Stabilize", tradition: "primal" },
+} as const satisfies Record<string, { label: string; cantrip: string; tradition: "arcane" | "primal" }>;
+
+export type OrientationSymbolId = keyof typeof ORIENTATION_SYMBOLS;
+export const ORIENTATION_SYMBOL_IDS = Object.keys(ORIENTATION_SYMBOLS) as OrientationSymbolId[];
+
 export type RuleElementKey =
   | "ActiveEffectLike"
   | "ChoiceSet"
@@ -622,10 +636,44 @@ function buildClassroomAdvantageFeats(): PF2eFeatSource[] {
   });
 }
 
+const ORIENTATION_OPTION = "orientation-symbol";
+const FIRST_LEVEL_ONLY = { lte: ["self:level", 1] };
+
+/** Takulu's Orientation Magic Symbols (Book 1 pp. 10-11), active only at character level 1. */
+function buildOrientationSymbolFeat(): PF2eFeatSource {
+  const choices = ORIENTATION_SYMBOL_IDS.map((id) => {
+    const s = ORIENTATION_SYMBOLS[id];
+    return { label: `${s.label} (${s.cantrip}, ${s.tradition})`, value: id };
+  });
+  return makeFeat(
+    "Orientation Symbol",
+    1,
+    "Symbol: at-will innate cantrip until you learn another; none: +1 status to saves vs spells until level 2. Manual: add cantrip as innate spell (p. 11).",
+    [
+      {
+        key: "ChoiceSet",
+        flag: "symbol",
+        rollOption: ORIENTATION_OPTION,
+        adjustName: true,
+        choices: [...choices, { label: "No Symbol (+1 vs spells)", value: "none" }],
+      },
+      {
+        key: "FlatModifier",
+        selector: ["saving-throw"],
+        type: "status",
+        value: 1,
+        predicate: [`${ORIENTATION_OPTION}:none`, "item:type:spell", FIRST_LEVEL_ONLY],
+        hideIfDisabled: true,
+      },
+    ],
+  );
+}
+
+export const ORIENTATION_SYMBOL_FEAT: PF2eFeatSource = buildOrientationSymbolFeat();
 export const STANDING_FEATS: readonly PF2eFeatSource[] = buildStandingFeats();
 export const CLASSROOM_ADVANTAGE_FEATS: readonly PF2eFeatSource[] = buildClassroomAdvantageFeats();
 export const BENEFIT_FEATS: readonly PF2eFeatSource[] = BRANCH_IDS.flatMap((branchId) =>
   BENEFITS.map((benefit) => buildBenefitFeat(branchId, benefit)),
 );
 // prettier-ignore
-export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];
+export const ACADEMIA_FEATS: readonly PF2eFeatSource[] = [...STANDING_FEATS, ORIENTATION_SYMBOL_FEAT, ...CLASSROOM_ADVANTAGE_FEATS, ...BENEFIT_FEATS];

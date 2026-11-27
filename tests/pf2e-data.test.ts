@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
+  ORIENTATION_SYMBOLS,
   PF2E_FEAT_UUIDS,
   PF2E_SCHEMA_VERSION,
   PF2E_UNLOCK_UUIDS,
@@ -24,7 +25,7 @@ interface PackItem {
     level?: { value: number };
     category?: string;
     prerequisites?: { value: { value: string }[] };
-    traits: { rarity: string; value: string[] };
+    traits: { rarity: string; value: string[]; traditions?: string[] };
   };
 }
 
@@ -154,6 +155,15 @@ describe("real PF2e system data", () => {
       expect(item?.name).toBe(label);
       expect(item?.system.slug ?? sluggify(item?.name ?? "")).toBe(slug);
       expect(item?.system.traits.rarity).toBe("uncommon");
+    }
+
+    const cantrips = new Map(
+      [...unlocksByUuid.values()]
+        .filter((item) => item.system.traits.value.includes("cantrip"))
+        .map((item) => [item.name, item]),
+    );
+    for (const { cantrip, tradition } of Object.values(ORIENTATION_SYMBOLS)) {
+      expect(cantrips.get(cantrip)?.system.traits.traditions, cantrip).toContain(tradition);
     }
   });
 });
