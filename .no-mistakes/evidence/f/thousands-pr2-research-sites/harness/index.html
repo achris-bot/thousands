@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><title>Thousands /research (local Foundry stand-in)</title>
+<style>
+body{font:14px sans-serif;margin:0;background:#ddd;display:flex;height:100vh}
+#left{flex:1;padding:12px;overflow:auto}#chat{width:520px;display:flex;flex-direction:column;background:#f4f0e6;border-left:2px solid #555}
+#log{list-style:none;margin:0;padding:8px;flex:1;overflow:auto}#log li{background:#fff;border:1px solid #999;border-radius:4px;margin:6px 0;padding:6px 10px}
+header{font-weight:bold;color:#642}#cmd{margin:8px;padding:6px}
+dialog{position:fixed;top:60px;left:30px;margin:0;width:560px;border:2px solid #642}dialog label{display:block;margin:7px 0}dialog select,dialog input[type=number],dialog input[type=text]{float:right;width:380px}
+.thousands-study{border-top:1px dashed #999}.toast{background:#fc6;padding:6px;margin:4px;border-radius:4px}
+#sheet{position:fixed;bottom:8px;left:12px;background:#fff;padding:8px;border:1px solid #888;font:12px monospace;white-space:pre-wrap;width:600px}
+</style>
+<div id="left"><b id="title">Local Foundry stand-in running the built thousands module</b><div id="toasts"></div><pre id="sheet"></pre></div>
+<div id="chat"><ol id="log"></ol><input id="cmd" placeholder="chat command, e.g. /research"></div>
+<script src="shim.js"></script>
+<script type="module">
+await import("/dist/module.js");
+Hooks.call("init");
+document.querySelector("#cmd").addEventListener("keydown", (e) => { if (e.key === "Enter") { Hooks.call("chatMessage", null, e.target.value); e.target.value = ""; } });
+window.FEATS = await (await fetch("/feats.json")).json();
+window.ready = true;
+</script>

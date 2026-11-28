@@ -1,0 +1,233 @@
+{
+  "bloodsalt": {
+    "levels": {
+      "uzunjati": 4,
+      "cascade-bearers": 3
+    },
+    "conditions": {},
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id10ymp93k": {
+          "degree": "criticalSuccess",
+          "delta": 2,
+          "star": false,
+          "skip": false,
+          "site": "bloodsalt",
+          "result": "criticalSuccess"
+        },
+        "id14hvspf4": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": true,
+          "site": "bloodsalt",
+          "result": "criticalFailure"
+        },
+        "id16pn4njs": {
+          "degree": "skipped",
+          "delta": 0,
+          "star": false,
+          "skip": false
+        }
+      }
+    }
+  },
+  "vacantEye": {
+    "levels": {
+      "uzunjati": 2,
+      "cascade-bearers": 3
+    },
+    "conditions": {},
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id100fvljo": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "vacant-eye",
+          "result": "criticalFailure"
+        }
+      }
+    }
+  },
+  "mzali": {
+    "levels": {
+      "uzunjati": 2,
+      "cascade-bearers": 3
+    },
+    "conditions": {
+      "doomed": 1
+    },
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id10c0cb4f": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "mzali-necropolis",
+          "result": "criticalFailure",
+          "condition": {
+            "slug": "doomed",
+            "from": 0,
+            "to": 1
+          }
+        }
+      }
+    }
+  },
+  "osibu": {
+    "levels": {
+      "uzunjati": 6,
+      "cascade-bearers": 3
+    },
+    "conditions": {},
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id16kusvn4": {
+          "degree": "criticalSuccess",
+          "delta": 2,
+          "star": false,
+          "skip": false,
+          "site": "osibu",
+          "result": "criticalSuccess"
+        },
+        "id20ozwpt5": {
+          "degree": "failure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "osibu",
+          "result": "failure"
+        },
+        "id22o4f1wk": {
+          "degree": "success",
+          "delta": 1,
+          "star": false,
+          "skip": false,
+          "site": "osibu",
+          "result": "success"
+        },
+        "id25wybl17": {
+          "degree": "criticalSuccess",
+          "delta": 1,
+          "star": true,
+          "skip": false,
+          "site": "osibu",
+          "result": "criticalSuccess"
+        },
+        "id32wnl89x": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "osibu",
+          "result": "criticalFailure"
+        }
+      }
+    }
+  },
+  "redStar": {
+    "levels": {
+      "uzunjati": 4,
+      "cascade-bearers": 3
+    },
+    "conditions": {},
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id10zigltb": {
+          "degree": "criticalSuccess",
+          "delta": 2,
+          "star": false,
+          "skip": false,
+          "site": "red-star-doorway",
+          "result": "criticalSuccess"
+        },
+        "id16thep3b": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "red-star-doorway",
+          "result": "criticalFailure"
+        }
+      }
+    }
+  },
+  "hallNonTelepath": {
+    "levels": {
+      "uzunjati": 2,
+      "cascade-bearers": 3
+    },
+    "conditions": {
+      "drained": 2
+    },
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id104995uw": {
+          "degree": "success",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "hall-of-reason",
+          "result": "failure"
+        },
+        "id12806v4g": {
+          "degree": "failure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "hall-of-reason",
+          "result": "criticalFailure",
+          "condition": {
+            "slug": "drained",
+            "from": 0,
+            "to": 2
+          }
+        }
+      }
+    }
+  },
+  "endlessTable": {
+    "levels": {
+      "uzunjati": 2,
+      "cascade-bearers": 3
+    },
+    "conditions": {},
+    "flags": {
+      "skipNext": false,
+      "cramFatigue": false,
+      "applied": {
+        "id16mldfwo": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "endless-table",
+          "result": "criticalFailure"
+        },
+        "id18kswyf8": {
+          "degree": "criticalFailure",
+          "delta": 0,
+          "star": false,
+          "skip": false,
+          "site": "endless-table",
+          "result": "criticalFailure"
+        }
+      }
+    }
+  }
+}
