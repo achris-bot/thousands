@@ -86,8 +86,15 @@ function makeActor(top: number, secondaryTop = 0, rank?: Rank) {
     deleteEmbeddedDocuments: async (_type: "Item", ids: string[]) => {
       actor.items = actor.items.filter((item) => !ids.includes(item.id));
     },
-    increaseCondition: vi.fn(async () => undefined),
-    decreaseCondition: vi.fn(async () => undefined),
+    conditions: {} as Record<string, number>,
+    getCondition: (slug: string) => ({ value: actor.conditions[slug] ?? 0 }),
+    increaseCondition: vi.fn(async (slug: string, options?: { value: number }) => {
+      const current = actor.conditions[slug] ?? 0;
+      actor.conditions[slug] = Math.max(current, options?.value ?? current + 1);
+    }),
+    decreaseCondition: vi.fn(async (slug: string) => {
+      actor.conditions[slug] = Math.max(0, (actor.conditions[slug] ?? 0) - 1);
+    }),
   };
   return actor;
 }
@@ -366,7 +373,7 @@ describe("starting Study", () => {
     await study(explicit);
     expect(createChat).toHaveBeenCalledWith(
       expect.objectContaining({
-        content: "<p>Tester must skip this Study opportunity after a critical failure.</p>",
+        content: "<p>Tester must skip this opportunity after a critical failure.</p>",
         flags: { thousands: { skip: "skip-id" } },
       }),
     );
@@ -1092,6 +1099,7 @@ describe("Practical Research", () => {
       warn: vi.fn(),
       newId: () => "pr-1",
       circumstance: (label: string, value: number) => ({ label, value }),
+      postSkip: vi.fn(async () => undefined),
       pickResearch: vi.fn(async (actors: readonly ReturnType<typeof makeActor>[]) =>
         pickResult ? { actor: pickResult.actor ?? actors[0]!, ...pickResult } : null,
       ),
@@ -1235,10 +1243,10 @@ describe("Practical Research", () => {
     entry(degree, { id, site, activity: "practical-research" });
 
   it.each([
-    ["bloodsalt", "must skip the next Study opportunity", undefined],
+    ["bloodsalt", "next month recovering", undefined],
     ["vacant-eye", "for 1 year", undefined],
     ["mzali-necropolis", "permanently barred", ["doomed", 1]],
-    ["osibu", "Treasure Points 0 → 0", undefined],
+    ["osibu", "serving the city", undefined],
     ["red-star-doorway", "repairing the site", undefined],
     ["hall-of-reason", "barred from this site for 1 week", ["drained", 2]],
     ["endless-table", "-2 circumstance penalty", undefined],
@@ -1248,6 +1256,7 @@ describe("Practical Research", () => {
     expect(describeEntry(actor, failed).text).toContain(text);
     await applyStudy(actor, failed);
     await applyStudy(actor, failed);
+    expect(describeEntry(actor, failed).text).toContain(text);
     expect(actor.flag.skipNext).toBe(site === "bloodsalt");
     expect(actor.increaseCondition.mock.calls).toEqual(
       condition ? [[condition[0], { value: condition[1] }]] : [],
@@ -1257,10 +1266,33 @@ describe("Practical Research", () => {
     expect(actor.decreaseCondition.mock.calls).toEqual(
       Array(condition?.[1] ?? 0).fill([condition?.[0]]),
     );
-    expect(siteTally(Object.values(actor.flag.applied!), site)).toMatchObject({
-      penalty: 0,
-      locked: false,
-    });
+    expect(siteTally(Object.values(actor.flag.applied!), site).penalty).toBe(0);
+  });
+
+  it.each([
+    ["undoes only the points gained", 1, undefined, 1],
+    ["leaves a higher earlier value alone", 3, undefined, 3],
+    ["leaves earlier points after the GM removed the gain", 1, 1, 1],
+  ])("on a Hall of Reason reroll %s", async (_name, before, removedTo, expected) => {
+    const actor = makeActor(2, 1, "conversant");
+    actor.conditions.drained = before;
+    const failed = at("hall-of-reason", "criticalFailure");
+    await applyStudy(actor, failed);
+    if (removedTo !== undefined) actor.conditions.drained = removedTo;
+    await applyStudy(actor, { ...failed, degree: "success" });
+    expect(actor.conditions.drained).toBe(expected);
+  });
+
+  it("posts a skipped opportunity for /research after a Bloodsalt critical failure", async () => {
+    const actor = makeActor(2, 1, "lore-speaker");
+    await applyStudy(actor, at("bloodsalt", "criticalFailure"));
+    const ui = makeResearchUi({ kind: "primary", outcome: "success" });
+    await startResearch(actor, ui);
+    expect(ui.postSkip).toHaveBeenCalledWith(actor, "pr-1");
+    expect(ui.postResearch).not.toHaveBeenCalled();
+    await applyStudy(actor, { id: "pr-1", activity: "study", degree: "skipped" });
+    await startResearch(actor, ui);
+    expect(ui.postResearch).toHaveBeenCalledOnce();
   });
 
   it("totals Osibu Treasure Points to at most 4 and takes them back on a reroll", async () => {
@@ -1304,8 +1336,6 @@ describe("Practical Research", () => {
     await applyStudy(actor, rolled);
     expect(actor.increaseCondition).toHaveBeenCalledWith("drained", { value: 2 });
 
-    await startResearch(actor, ui);
-    expect(ui.warn).toHaveBeenCalledWith(expect.stringContaining("Hall of Reason lockout"));
     await applyStudy(actor, at("endless-table", "criticalFailure", "e1"));
     await applyStudy(actor, at("endless-table", "criticalFailure", "e2"));
     await startResearch(actor, makeResearchUi({ kind: "primary", skill: "arcana", site: "endless-table" })); // prettier-ignore

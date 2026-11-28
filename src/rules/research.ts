@@ -31,8 +31,6 @@ export interface ResearchSite {
   critSuccess?: string;
   /** Consequence shown and recorded on a critical failure. */
   critFailure?: string;
-  /** True when `critFailure` bars the character from further research here. */
-  lockout?: boolean;
   /** True when a critical failure also costs the next Study opportunity. */
   skipNext?: boolean;
   /** Condition gained on a critical failure. */
@@ -59,7 +57,6 @@ export const RESEARCH_SITES: Record<ResearchSiteId, ResearchSite> = {
     duration: "1 month",
     bonusSkills: ["nature", "society"],
     critFailure: "cannot research at this site for 1 year",
-    lockout: true,
   },
   "mzali-necropolis": {
     label: "Mzali Necropolis",
@@ -67,7 +64,6 @@ export const RESEARCH_SITES: Record<ResearchSiteId, ResearchSite> = {
     duration: "1 month",
     bonusSkills: ["religion"],
     critFailure: "doomed 1 for 1 month and permanently barred from this site",
-    lockout: true,
     condition: { slug: "doomed", value: 1 },
   },
   osibu: {
@@ -77,7 +73,6 @@ export const RESEARCH_SITES: Record<ResearchSiteId, ResearchSite> = {
     bonusSkills: ["diplomacy", "society"],
     treasure: { criticalSuccess: 2, success: 1, failure: 1 },
     critFailure: "barred from this site until after 1 month serving the city",
-    lockout: true,
   },
   "red-star-doorway": {
     label: "Red Star Doorway",
@@ -86,7 +81,6 @@ export const RESEARCH_SITES: Record<ResearchSiteId, ResearchSite> = {
     bonusSkills: ["occultism"],
     critSuccess: "Mpondo's attitude improves by 1 step",
     critFailure: "must spend 1 week repairing the site before researching here again",
-    lockout: true,
   },
   "hall-of-reason": {
     label: "Hall of Reason",
@@ -97,7 +91,6 @@ export const RESEARCH_SITES: Record<ResearchSiteId, ResearchSite> = {
     needsTelepathy: true,
     critSuccess: "learns the Akitonian language",
     critFailure: "drained 2 and barred from this site for 1 week",
-    lockout: true,
     condition: { slug: "drained", value: 2 },
   },
   "endless-table": {
@@ -148,13 +141,10 @@ export function siteTally(applied: Iterable<SiteResult>, site: ResearchSiteId) {
   const info = RESEARCH_SITES[site];
   let treasure = 0;
   let penalty = 0;
-  let locked = false;
   for (const { site: at, result } of applied) {
     if (at !== site || !result) continue;
     treasure += info.treasure?.[result] ?? 0;
-    if (result !== "criticalFailure") continue;
-    penalty += info.penalty ?? 0;
-    locked ||= !!info.lockout;
+    if (result === "criticalFailure") penalty += info.penalty ?? 0;
   }
-  return { treasure: Math.min(MAX_TREASURE_POINTS, treasure), penalty, locked };
+  return { treasure: Math.min(MAX_TREASURE_POINTS, treasure), penalty };
 }

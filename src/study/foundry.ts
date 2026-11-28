@@ -384,7 +384,7 @@ const foundryUi: StudyUi & ResearchUi & PromoteUi = {
   postSkip: (actor, id) =>
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor }),
-      content: `<p>${foundry.utils.escapeHTML(actor.name)} must skip this Study opportunity after a critical failure.</p>`,
+      content: `<p>${foundry.utils.escapeHTML(actor.name)} must skip this opportunity after a critical failure.</p>`,
       flags: { [MODULE_ID]: { skip: id } },
     }),
   postResearch: (actor, data) => {

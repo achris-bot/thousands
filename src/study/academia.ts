@@ -36,6 +36,8 @@ export interface AppliedRecord extends SiteResult {
   delta: number;
   star: boolean;
   skip: boolean;
+  /** Condition value before and after a site's critical failure raised it. */
+  condition?: { slug: "doomed" | "drained"; from: number; to: number };
 }
 
 /** Stored under `flags.thousands.study`; everything else about a character lives in its feats. */
@@ -61,6 +63,7 @@ export interface ActorLike {
     options?: { value: number },
   ): Promise<unknown>;
   decreaseCondition?(slug: "fatigued" | "doomed" | "drained"): Promise<unknown>;
+  getCondition?(slug: "doomed" | "drained"): { value: number | null } | null;
 }
 
 export interface AcademiaState {
@@ -132,13 +135,14 @@ export interface StudyEntry {
 }
 
 /** Chat-card lines for a result at a Practical Research site. */
-function siteNotes(state: AcademiaState, entry: StudyEntry, outcome: Required<SiteResult>) {
+export function siteNotes(state: AcademiaState, entry: StudyEntry, outcome: Required<SiteResult>) {
   const { site, result } = outcome;
   const info = RESEARCH_SITES[site];
   const others = Object.entries(state.flags.applied ?? {}).flatMap(([id, r]) =>
     id === entry.id ? [] : [r],
   );
   const before = siteTally(others, site);
+  const applied = state.flags.applied?.[entry.id]?.degree === entry.degree;
   const after = siteTally([...others, outcome], site);
   const consequence = {
     criticalSuccess: info.critSuccess,
@@ -150,7 +154,9 @@ function siteNotes(state: AcademiaState, entry: StudyEntry, outcome: Required<Si
     ...(result !== entry.degree ? ["no telepathy: result is one degree worse"] : []),
     ...(consequence ? [consequence] : []),
     ...(info.treasure
-      ? [`Treasure Points ${before.treasure} → ${after.treasure} (max ${MAX_TREASURE_POINTS})`]
+      ? [
+          `Treasure Points ${applied ? "" : `${before.treasure} → `}${after.treasure} (max ${MAX_TREASURE_POINTS})`,
+        ]
       : []),
     ...(after.penalty
       ? [`${after.penalty} circumstance penalty to later research at ${info.label}`]
@@ -285,8 +291,8 @@ export function planStudy(
   };
 }
 
-const siteCondition = ({ site, result }: SiteResult) =>
-  site && result === "criticalFailure" ? RESEARCH_SITES[site].condition : undefined;
+const conditionValue = (actor: ActorLike, slug: "doomed" | "drained") =>
+  actor.getCondition?.(slug)?.value ?? 0;
 
 /** Applies an entry once; a different result for the same entry (a reroll) replaces the old one. */
 export async function applyStudy(actor: ActorLike, entry: StudyEntry): Promise<boolean> {
@@ -302,10 +308,11 @@ export async function applyStudy(actor: ActorLike, entry: StudyEntry): Promise<b
     ) {
       await actor.decreaseCondition?.("fatigued");
     }
-    const gained = siteCondition(previous);
-    // One step per point gained, which keeps any value the character already had.
-    for (let n = 0; gained && n < gained.value; n++) {
-      await actor.decreaseCondition?.(gained.slug);
+    if (previous.condition) {
+      const { slug, from, to } = previous.condition;
+      for (let n = Math.min(conditionValue(actor, slug), to) - from; n > 0; n--) {
+        await actor.decreaseCondition?.(slug);
+      }
     }
     const branch = entry.kind && state.branches[entry.kind];
     const options = branch
@@ -330,8 +337,16 @@ export async function applyStudy(actor: ActorLike, entry: StudyEntry): Promise<b
   ) {
     await actor.increaseCondition?.("fatigued");
   }
-  const condition = siteCondition(record);
-  if (condition) await actor.increaseCondition?.(condition.slug, { value: condition.value });
+  const condition =
+    record.site && record.result === "criticalFailure"
+      ? RESEARCH_SITES[record.site].condition
+      : undefined;
+  if (condition) {
+    const { slug, value } = condition;
+    const from = conditionValue(actor, slug);
+    await actor.increaseCondition?.(slug, { value });
+    record.condition = { slug, from, to: conditionValue(actor, slug) };
+  }
   const sources = feats.map((feat) => structuredClone(feat));
   if (sources.length > 0) await actor.createEmbeddedDocuments("Item", sources);
   const applied = { ...state.flags.applied, [entry.id]: record };

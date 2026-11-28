@@ -120,6 +120,7 @@ export interface ResearchUi {
   pickResearch(actors: readonly StudyActor[]): Promise<ResearchPick | null>;
   warn(text: string): void;
   postResearch(actor: StudyActor, data: ResearchFlag): Promise<unknown>;
+  postSkip: StudyUi["postSkip"];
   /** A PF2e circumstance modifier to add to a single check. */
   circumstance(label: string, value: number): object;
   newId(): string;
@@ -310,6 +311,10 @@ export async function startResearch(
   if (!picked) return;
   const state = validateResearchActor(picked.actor, ui);
   if (!state) return;
+  if (state.flags.skipNext) {
+    await ui.postSkip(picked.actor, ui.newId());
+    return;
+  }
   const branch = state.branches[picked.kind];
   if (!branch) {
     return ui.warn(`${picked.actor.name} has no ${picked.kind} branch feat.`);
@@ -319,9 +324,6 @@ export async function startResearch(
   const info = site && RESEARCH_SITES[site];
   const telepathy = info?.needsTelepathy && picked.telepathy === false ? false : undefined;
   const tally = site && siteTally(Object.values(state.flags.applied ?? {}), site);
-  if (info && tally?.locked) {
-    ui.warn(`${picked.actor.name} has a recorded ${info.label} lockout: ${info.critFailure}.`);
-  }
   const id = ui.newId();
   const dc =
     picked.dc !== undefined && Number.isFinite(picked.dc) && picked.dc > 0 ? picked.dc : undefined;

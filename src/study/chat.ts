@@ -1,6 +1,6 @@
 import { MODULE_ID } from "../constants.js";
 import { isResearchSiteId, type BranchKind, type DegreeOfSuccess } from "../rules/index.js";
-import { planStudy, readState, type ActorLike, type StudyEntry } from "./academia.js";
+import { planStudy, readState, siteNotes, type ActorLike, type StudyEntry } from "./academia.js";
 import {
   RESEARCH_NOTE_PREFIX,
   parseResearchSiteOption,
@@ -110,8 +110,13 @@ export function describeEntry(actor: ActorLike, entry: StudyEntry) {
       const failed = previous.degree === "failure" || previous.degree === "criticalFailure";
       return { text: failed ? "applied (fatigued)." : "applied (no fatigue).", done: true };
     }
-    const note = entry.note ? `; ${entry.note}` : "";
-    return { text: `applied (+${previous.delta} branch level${note}).`, done: true };
+    const { site, result } = previous;
+    const notes = [
+      ...(site && result ? siteNotes(state, entry, { site, result }) : []),
+      ...(entry.note ? [entry.note] : []),
+    ];
+    const details = notes.map((note) => `; ${note}`).join("");
+    return { text: `applied (+${previous.delta} branch level${details}).`, done: true };
   }
   if (previous) return { text: "the result changed; Apply replaces the old one.", done: false };
   try {
