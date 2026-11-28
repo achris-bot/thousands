@@ -60,7 +60,7 @@ export interface ActorLike {
   deleteEmbeddedDocuments(type: "Item", ids: string[]): Promise<unknown>;
   increaseCondition?(
     slug: "fatigued" | "doomed" | "drained",
-    options?: { value: number },
+    options?: { value: number; max: number },
   ): Promise<unknown>;
   decreaseCondition?(slug: "fatigued" | "doomed" | "drained"): Promise<unknown>;
   getCondition?(slug: "doomed" | "drained"): { value: number | null } | null;
@@ -344,8 +344,10 @@ export async function applyStudy(actor: ActorLike, entry: StudyEntry): Promise<b
   if (condition) {
     const { slug, value } = condition;
     const from = conditionValue(actor, slug);
-    await actor.increaseCondition?.(slug, { value });
-    record.condition = { slug, from, to: conditionValue(actor, slug) };
+    if (from < value) {
+      await actor.increaseCondition?.(slug, { value, max: value });
+      record.condition = { slug, from, to: conditionValue(actor, slug) };
+    }
   }
   const sources = feats.map((feat) => structuredClone(feat));
   if (sources.length > 0) await actor.createEmbeddedDocuments("Item", sources);

@@ -88,9 +88,9 @@ function makeActor(top: number, secondaryTop = 0, rank?: Rank) {
     },
     conditions: {} as Record<string, number>,
     getCondition: (slug: string) => ({ value: actor.conditions[slug] ?? 0 }),
-    increaseCondition: vi.fn(async (slug: string, options?: { value: number }) => {
-      const current = actor.conditions[slug] ?? 0;
-      actor.conditions[slug] = Math.max(current, options?.value ?? current + 1);
+    increaseCondition: vi.fn(async (slug: string, options?: { value: number; max: number }) => {
+      const { value = 1, max = Infinity } = options ?? {};
+      actor.conditions[slug] = Math.min((actor.conditions[slug] ?? 0) + value, max);
     }),
     decreaseCondition: vi.fn(async (slug: string) => {
       actor.conditions[slug] = Math.max(0, (actor.conditions[slug] ?? 0) - 1);
@@ -1259,7 +1259,7 @@ describe("Practical Research", () => {
     expect(describeEntry(actor, failed).text).toContain(text);
     expect(actor.flag.skipNext).toBe(site === "bloodsalt");
     expect(actor.increaseCondition.mock.calls).toEqual(
-      condition ? [[condition[0], { value: condition[1] }]] : [],
+      condition ? [[condition[0], { value: condition[1], max: condition[1] }]] : [],
     );
     // A reroll takes back exactly the condition steps that were added.
     await applyStudy(actor, { ...failed, degree: "success" });
@@ -1270,14 +1270,15 @@ describe("Practical Research", () => {
   });
 
   it.each([
-    ["undoes only the points gained", 1, undefined, 1],
-    ["leaves a higher earlier value alone", 3, undefined, 3],
-    ["leaves earlier points after the GM removed the gain", 1, 1, 1],
-  ])("on a Hall of Reason reroll %s", async (_name, before, removedTo, expected) => {
+    ["undoes only the points gained", 1, 2, undefined, 1],
+    ["leaves a higher earlier value alone", 3, 3, undefined, 3],
+    ["leaves earlier points after the GM removed the gain", 1, 2, 1, 1],
+  ])("on a Hall of Reason reroll %s", async (_name, before, raised, removedTo, expected) => {
     const actor = makeActor(2, 1, "conversant");
     actor.conditions.drained = before;
     const failed = at("hall-of-reason", "criticalFailure");
     await applyStudy(actor, failed);
+    expect(actor.conditions.drained).toBe(raised);
     if (removedTo !== undefined) actor.conditions.drained = removedTo;
     await applyStudy(actor, { ...failed, degree: "success" });
     expect(actor.conditions.drained).toBe(expected);
@@ -1334,7 +1335,7 @@ describe("Practical Research", () => {
     })!;
     expect(describeEntry(actor, rolled).text).toContain("one degree worse; drained 2");
     await applyStudy(actor, rolled);
-    expect(actor.increaseCondition).toHaveBeenCalledWith("drained", { value: 2 });
+    expect(actor.increaseCondition).toHaveBeenCalledWith("drained", { value: 2, max: 2 });
 
     await applyStudy(actor, at("endless-table", "criticalFailure", "e1"));
     await applyStudy(actor, at("endless-table", "criticalFailure", "e2"));
