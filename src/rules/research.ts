@@ -31,7 +31,7 @@ export interface ResearchSite {
   critSuccess?: string;
   /** Consequence shown and recorded on a critical failure. */
   critFailure?: string;
-  /** True when a critical failure also costs the next Study opportunity. */
+  /** True when a critical failure also sets the pending Study / Practical Research skip. */
   skipNext?: boolean;
   /** Condition gained on a critical failure. */
   condition?: { slug: "doomed" | "drained"; value: number };
