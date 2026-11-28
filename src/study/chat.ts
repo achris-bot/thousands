@@ -1,7 +1,12 @@
 import { MODULE_ID } from "../constants.js";
-import type { BranchKind, DegreeOfSuccess } from "../rules/index.js";
+import { isResearchSiteId, type BranchKind, type DegreeOfSuccess } from "../rules/index.js";
 import { planStudy, readState, type ActorLike, type StudyEntry } from "./academia.js";
-import { RESEARCH_NOTE_PREFIX, parseStudyOption, type ResearchFlag } from "./roll.js";
+import {
+  RESEARCH_NOTE_PREFIX,
+  parseResearchSiteOption,
+  parseStudyOption,
+  type ResearchFlag,
+} from "./roll.js";
 
 const DEGREES = new Set<DegreeOfSuccess>([
   "criticalSuccess",
@@ -74,6 +79,8 @@ export function entryFromMessage(message: MessageLike): StudyEntry | null {
       activity: "practical-research",
       kind: research.kind,
       degree: research.degree,
+      ...(isResearchSiteId(research.site) ? { site: research.site } : {}),
+      ...(research.telepathy === false ? { telepathy: false } : {}),
       ...(note ? { note } : {}),
     };
   }
@@ -90,7 +97,8 @@ export function entryFromMessage(message: MessageLike): StudyEntry | null {
     ?.find((opt) => opt.startsWith(RESEARCH_NOTE_PREFIX))
     ?.slice(RESEARCH_NOTE_PREFIX.length);
   const note = rawNote ? decodeURIComponent(rawNote) : undefined;
-  return { ...parsed, degree: context.outcome, ...(note ? { note } : {}) };
+  const site = options?.map(parseResearchSiteOption).find((s) => s !== null);
+  return { ...parsed, ...site, degree: context.outcome, ...(note ? { note } : {}) };
 }
 
 /** The line shown on the card, and whether this exact result is already applied. */
